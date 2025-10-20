@@ -57,6 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        coach: {
+          fitness: "hsl(var(--fitness))",
+          career: "hsl(var(--career))",
+          mindfulness: "hsl(var(--mindfulness))",
+          finance: "hsl(var(--finance))",
+          relationship: "hsl(var(--relationship))",
+        },
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-primary": "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))",
       },
       borderRadius: {
         lg: "var(--radius)",
