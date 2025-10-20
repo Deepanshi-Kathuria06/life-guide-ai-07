@@ -77,7 +77,7 @@ export default function Landing() {
             <Button size="lg" onClick={() => navigate("/signup")}>
               Start Free Trial
             </Button>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" onClick={() => navigate("/pricing")}>
               View Pricing
             </Button>
           </div>

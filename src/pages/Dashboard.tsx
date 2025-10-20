@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useSubscription } from "@/hooks/useSubscription";
 import CoachCard from "@/components/CoachCard";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const { hasAccess, loading } = useSubscription();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     checkUser();
@@ -19,7 +21,7 @@ export default function Dashboard() {
     if (!user) {
       navigate("/login");
     } else {
-      setLoading(false);
+      setCheckingAuth(false);
     }
   };
 
@@ -32,8 +34,12 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  if (loading) {
+  if (loading || checkingAuth) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!hasAccess) {
+    return null;
   }
 
   return (

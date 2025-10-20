@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Sparkles, ArrowLeft, Send, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Dumbbell, Briefcase, Brain, DollarSign, Heart } from "lucide-react";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
@@ -47,6 +48,7 @@ const coachInfo = {
 export default function Chat() {
   const navigate = useNavigate();
   const { coachType } = useParams<{ coachType: CoachType }>();
+  const { hasAccess, loading: subscriptionLoading } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -216,6 +218,14 @@ export default function Chat() {
       description: "All messages have been deleted",
     });
   };
+
+  if (subscriptionLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!hasAccess) {
+    return null;
+  }
 
   if (!coach || !Icon) {
     return <div>Invalid coach type</div>;
