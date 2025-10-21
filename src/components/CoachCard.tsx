@@ -17,24 +17,46 @@ const iconMap = {
   relationship: Heart,
 };
 
+const emojiMap = {
+  fitness: "💪",
+  career: "💼",
+  mindfulness: "🧠",
+  finance: "💰",
+  relationship: "❤️",
+};
+
 export default function CoachCard({ type, name, description }: CoachCardProps) {
   const navigate = useNavigate();
   const Icon = iconMap[type];
+  const emoji = emojiMap[type];
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-all border-2 hover:border-primary/50 flex flex-col">
-      <div className={`w-14 h-14 rounded-xl bg-coach-${type}/10 flex items-center justify-center mb-4`}>
-        <Icon className={`h-7 w-7 text-coach-${type}`} />
+    <Card 
+      className="relative p-8 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden flex flex-col"
+      style={{
+        borderImage: `linear-gradient(135deg, hsl(var(--coach-${type})), transparent) 1`,
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative z-10 flex flex-col flex-grow">
+        <div className="text-5xl mb-4">{emoji}</div>
+        <h3 className="text-xl font-semibold mb-3" style={{ color: `hsl(var(--coach-${type}))` }}>
+          {name}
+        </h3>
+        <p className="text-muted-foreground mb-6 flex-grow">{description}</p>
+        <Button
+          onClick={() => navigate(`/chat/${type}`)}
+          className="w-full"
+          variant="outline"
+          style={{ 
+            borderColor: `hsl(var(--coach-${type}))`,
+            color: `hsl(var(--coach-${type}))`
+          }}
+        >
+          <MessageSquare className="h-4 w-4 mr-2" />
+          Chat Now
+        </Button>
       </div>
-      <h3 className="text-xl font-semibold mb-2">{name}</h3>
-      <p className="text-muted-foreground mb-6 flex-grow">{description}</p>
-      <Button
-        onClick={() => navigate(`/chat/${type}`)}
-        className="w-full"
-      >
-        <MessageSquare className="h-4 w-4 mr-2" />
-        Start Chat
-      </Button>
     </Card>
   );
 }
