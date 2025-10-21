@@ -171,26 +171,105 @@ export default function Chat() {
       return;
     }
 
-    // TODO: Call AI API here when Perplexity is connected
-    // For now, add a placeholder response
-    const aiResponse = "AI integration will be connected soon. This is a placeholder response.";
-
+    // Add placeholder for AI message that will be updated
+    const tempAiMsgId = `temp-ai-${Date.now()}`;
     const tempAiMsg: Message = {
-      id: `temp-ai-${Date.now()}`,
+      id: tempAiMsgId,
       role: "assistant",
-      content: aiResponse,
+      content: "",
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, tempAiMsg]);
 
-    // Save AI message to database
-    await supabase
-      .from("messages")
-      .insert({
-        chat_id: chatId,
-        role: "assistant",
-        content: aiResponse,
+    try {
+      // Stream AI response
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      const response = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: messages
+            .filter((m) => !m.id.startsWith("temp-"))
+            .map((m) => ({ role: m.role, content: m.content }))
+            .concat([{ role: "user", content: userMessage }]),
+          coachType: coachType,
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get AI response");
+      }
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let aiResponseContent = "";
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              aiResponseContent += content;
+              // Update the AI message in UI
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === tempAiMsgId ? { ...m, content: aiResponseContent } : m
+                )
+              );
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Save final AI message to database
+      if (aiResponseContent) {
+        await supabase.from("messages").insert({
+          chat_id: chatId,
+          role: "assistant",
+          content: aiResponseContent,
+        });
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to get AI response",
+      });
+      // Remove the temp AI message on error
+      setMessages((prev) => prev.filter((m) => m.id !== tempAiMsgId));
+    }
 
     setLoading(false);
   };

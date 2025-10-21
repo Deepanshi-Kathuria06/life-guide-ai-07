@@ -74,19 +74,20 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <Sparkles className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              CoachAI
+              AICOACHLY
             </h1>
           </div>
           <div className="flex gap-3">
             <Button variant="ghost" onClick={() => navigate("/login")}>
               Log In
             </Button>
-            <Button onClick={() => navigate("/signup")}>Get Started</Button>
+            <Button variant="gradient" onClick={() => navigate("/signup")}>
+              Get Started
+            </Button>
           </div>
         </div>
       </header>
@@ -94,7 +95,9 @@ export default function Pricing() {
       {/* Pricing Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <h2 className="text-5xl font-bold mb-4">
+            Simple, <span className="bg-gradient-primary bg-clip-text text-transparent">Transparent</span> Pricing
+          </h2>
           <p className="text-xl text-muted-foreground">
             Start free, upgrade when you're ready
           </p>
@@ -104,15 +107,15 @@ export default function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`p-8 relative ${
+              className={`p-8 relative bg-card/50 backdrop-blur-sm ${
                 plan.popular
-                  ? "border-primary border-2 shadow-elegant"
-                  : "border-border"
+                  ? "border-primary border-2 shadow-lg"
+                  : "border-border border-2"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-gradient-primary px-4 py-1 rounded-full text-sm font-semibold text-white">
                     Most Popular
                   </span>
                 </div>
@@ -137,7 +140,7 @@ export default function Pricing() {
 
               <Button
                 className="w-full"
-                variant={plan.popular ? "default" : "outline"}
+                variant={plan.popular ? "gradient" : "outline"}
                 onClick={() => handleSelectPlan(plan.name)}
               >
                 {plan.cta}
