@@ -89,6 +89,7 @@ serve(async (req) => {
       headers: {
         Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
         "Content-Type": "application/json",
+        Accept: "text/event-stream",
       },
       body: JSON.stringify({
         inputs: conversationText,
@@ -119,6 +120,13 @@ serve(async (req) => {
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      if (response.status === 404) {
+        return new Response(
+          JSON.stringify({ error: "Model not found or not available on serverless inference. Verify the model ID or enable access for your token." }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       
       if (response.status === 503) {
         return new Response(
@@ -133,38 +141,82 @@ serve(async (req) => {
       );
     }
 
-    // Transform HuggingFace streaming response to OpenAI-compatible format
-    const transformStream = new TransformStream({
-      async transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
-        const lines = text.split('\n').filter(line => line.trim());
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.token?.text) {
-                const openAIFormat = {
-                  choices: [{
-                    delta: { content: data.token.text },
-                    index: 0,
-                  }],
-                };
-                controller.enqueue(
-                  new TextEncoder().encode(`data: ${JSON.stringify(openAIFormat)}\n\n`)
-                );
+    // Return SSE stream (native or synthesized) in OpenAI-compatible format
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("text/event-stream")) {
+      // Transform HuggingFace streaming response to OpenAI-compatible format
+      const transformStream = new TransformStream({
+        async transform(chunk, controller) {
+          const text = new TextDecoder().decode(chunk);
+          const lines = text.split('\n').filter(line => line.trim());
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                if (data.token?.text) {
+                  const openAIFormat = {
+                    choices: [{
+                      delta: { content: data.token.text },
+                      index: 0,
+                    }],
+                  };
+                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(openAIFormat)}\n\n`));
+                }
+              } catch (e) {
+                // Ignore partials/non-JSON lines
               }
-            } catch (e) {
-              console.error("Parse error:", e);
             }
           }
+        },
+        flush(controller) {
+          controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
         }
-      },
-    });
+      });
 
-    return new Response(response.body?.pipeThrough(transformStream), {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
+      return new Response(response.body?.pipeThrough(transformStream), {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    } else {
+      // Non-stream JSON response: synthesize SSE for the client
+      let fullText = "";
+      try {
+        const json = await response.json();
+        if (Array.isArray(json)) {
+          fullText = json[0]?.generated_text || json[0]?.text || "";
+        } else if (json?.generated_text || json?.text) {
+          fullText = json.generated_text || json.text || "";
+        }
+        if (!fullText) {
+          console.error("Unexpected HF JSON response shape:", json);
+          return new Response(JSON.stringify({ error: "Unexpected AI response format" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse HF JSON response:", e);
+        return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          const payload = { choices: [{ delta: { content: fullText }, index: 0 }] };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          controller.close();
+        }
+      });
+
+      return new Response(stream, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    }
   } catch (error) {
     console.error("Chat error:", error);
     return new Response(
