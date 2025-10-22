@@ -84,7 +84,7 @@ serve(async (req) => {
     
     conversationText += `<|start_header_id|>assistant<|end_header_id|>\n\n`;
 
-    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct", {
+    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-8B-Instruct", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
@@ -92,12 +92,12 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         inputs: conversationText,
+        stream: true,
         parameters: {
           max_new_tokens: 500,
           temperature: 0.7,
           top_p: 0.95,
           return_full_text: false,
-          stream: true,
         },
       }),
     });
@@ -110,6 +110,13 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (response.status === 403) {
+        return new Response(
+          JSON.stringify({ error: "Access to requested model is restricted. Accept the model license and ensure your token has access." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
