@@ -74,14 +74,17 @@ serve(async (req) => {
     const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
     console.log(`Starting chat for coach type: ${coachType}`);
 
-    // Build conversation with system prompt integrated
-    let conversationText = systemPrompt + "\n\n";
+    // Format conversation for Llama 3.1 chat template
+    let conversationText = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${systemPrompt}<|eot_id|>`;
+    
     messages.forEach((msg: any) => {
-      conversationText += `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}\n`;
+      const role = msg.role === "user" ? "user" : "assistant";
+      conversationText += `<|start_header_id|>${role}<|end_header_id|>\n\n${msg.content}<|eot_id|>`;
     });
-    conversationText += "Assistant:";
+    
+    conversationText += `<|start_header_id|>assistant<|end_header_id|>\n\n`;
 
-    const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
+    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
