@@ -74,35 +74,34 @@ serve(async (req) => {
     const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
     console.log(`Starting chat for coach type: ${coachType}`);
 
-    // Format messages for HuggingFace - combine system prompt with first user message
-    const formattedMessages = messages.map((msg: any, index: number) => {
-      if (index === 0 && msg.role === "user") {
-        return {
-          role: "user",
-          content: `${systemPrompt}\n\nUser: ${msg.content}`
-        };
-      }
-      return msg;
+    // Build conversation with system prompt integrated
+    let conversationText = systemPrompt + "\n\n";
+    messages.forEach((msg: any) => {
+      conversationText += `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}\n`;
     });
+    conversationText += "Assistant:";
 
-    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-8B-Instruct/v1/chat/completions", {
+    const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/Meta-Llama-3.1-8B-Instruct",
-        messages: formattedMessages,
-        max_tokens: 1000,
-        temperature: 0.7,
-        stream: true,
+        inputs: conversationText,
+        parameters: {
+          max_new_tokens: 500,
+          temperature: 0.7,
+          top_p: 0.95,
+          return_full_text: false,
+          stream: true,
+        },
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("HuggingFace API error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -111,20 +110,49 @@ serve(async (req) => {
         );
       }
       
-      if (response.status === 402) {
+      if (response.status === 503) {
         return new Response(
-          JSON.stringify({ error: "AI credits depleted. Please contact support." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: "Model is loading. Please try again in a moment." }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
       return new Response(
-        JSON.stringify({ error: "AI service error" }),
+        JSON.stringify({ error: "AI service error. Please try again." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(response.body, {
+    // Transform HuggingFace streaming response to OpenAI-compatible format
+    const transformStream = new TransformStream({
+      async transform(chunk, controller) {
+        const text = new TextDecoder().decode(chunk);
+        const lines = text.split('\n').filter(line => line.trim());
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.token?.text) {
+                const openAIFormat = {
+                  choices: [{
+                    delta: { content: data.token.text },
+                    index: 0,
+                  }],
+                };
+                controller.enqueue(
+                  new TextEncoder().encode(`data: ${JSON.stringify(openAIFormat)}\n\n`)
+                );
+              }
+            } catch (e) {
+              console.error("Parse error:", e);
+            }
+          }
+        }
+      },
+    });
+
+    return new Response(response.body?.pipeThrough(transformStream), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
