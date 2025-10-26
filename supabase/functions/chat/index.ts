@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import Bytez from "https://cdn.jsdelivr.net/npm/bytez.js@latest/+esm";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -62,9 +63,9 @@ serve(async (req) => {
       );
     }
 
-    const HUGGING_FACE_API_KEY = Deno.env.get("HUGGING_FACE_API_KEY");
-    if (!HUGGING_FACE_API_KEY) {
-      console.error("HUGGING_FACE_API_KEY is not configured");
+    const BYTEZ_API_KEY = Deno.env.get("BYTEZ_API_KEY");
+    if (!BYTEZ_API_KEY) {
+      console.error("BYTEZ_API_KEY is not configured");
       return new Response(
         JSON.stringify({ error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -74,149 +75,55 @@ serve(async (req) => {
     const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
     console.log(`Starting chat for coach type: ${coachType}`);
 
-    // Format conversation for Llama 3.1 chat template
-    let conversationText = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n${systemPrompt}<|eot_id|>`;
-    
-    messages.forEach((msg: any) => {
-      const role = msg.role === "user" ? "user" : "assistant";
-      conversationText += `<|start_header_id|>${role}<|end_header_id|>\n\n${msg.content}<|eot_id|>`;
-    });
-    
-    conversationText += `<|start_header_id|>assistant<|end_header_id|>\n\n`;
+    // Initialize Bytez SDK
+    const sdk = new Bytez(BYTEZ_API_KEY);
+    const model = sdk.model("openai/gpt-4.1");
 
-    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-8B-Instruct", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      },
-      body: JSON.stringify({
-        inputs: conversationText,
-        stream: true,
-        parameters: {
-          max_new_tokens: 500,
-          temperature: 0.7,
-          top_p: 0.95,
-          return_full_text: false,
-        },
-      }),
-    });
+    // Prepare messages with system prompt
+    const chatMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages
+    ];
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("HuggingFace API error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      if (response.status === 403) {
-        return new Response(
-          JSON.stringify({ error: "Access to requested model is restricted. Accept the model license and ensure your token has access." }),
-          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+    console.log("Sending request to Bytez API...");
 
-      if (response.status === 404) {
-        return new Response(
-          JSON.stringify({ error: "Model not found or not available on serverless inference. Verify the model ID or enable access for your token." }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      if (response.status === 503) {
-        return new Response(
-          JSON.stringify({ error: "Model is loading. Please try again in a moment." }),
-          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+    // Run the model
+    const { error, output } = await model.run(chatMessages);
 
+    if (error) {
+      console.error("Bytez API error:", error);
       return new Response(
         JSON.stringify({ error: "AI service error. Please try again." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Return SSE stream (native or synthesized) in OpenAI-compatible format
-    const contentType = response.headers.get("content-type") || "";
+    console.log("Received response from Bytez API");
 
-    if (contentType.includes("text/event-stream")) {
-      // Transform HuggingFace streaming response to OpenAI-compatible format
-      const transformStream = new TransformStream({
-        async transform(chunk, controller) {
-          const text = new TextDecoder().decode(chunk);
-          const lines = text.split('\n').filter(line => line.trim());
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.token?.text) {
-                  const openAIFormat = {
-                    choices: [{
-                      delta: { content: data.token.text },
-                      index: 0,
-                    }],
-                  };
-                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(openAIFormat)}\n\n`));
-                }
-              } catch (e) {
-                // Ignore partials/non-JSON lines
-              }
-            }
-          }
-        },
-        flush(controller) {
-          controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
-        }
-      });
-
-      return new Response(response.body?.pipeThrough(transformStream), {
-        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-      });
-    } else {
-      // Non-stream JSON response: synthesize SSE for the client
-      let fullText = "";
-      try {
-        const json = await response.json();
-        if (Array.isArray(json)) {
-          fullText = json[0]?.generated_text || json[0]?.text || "";
-        } else if (json?.generated_text || json?.text) {
-          fullText = json.generated_text || json.text || "";
-        }
-        if (!fullText) {
-          console.error("Unexpected HF JSON response shape:", json);
-          return new Response(JSON.stringify({ error: "Unexpected AI response format" }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      } catch (e) {
-        console.error("Failed to parse HF JSON response:", e);
-        return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    // Convert Bytez output to SSE stream format
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        const content = output?.content || output?.message?.content || output;
+        const text = typeof content === 'string' ? content : JSON.stringify(content);
+        
+        // Send in OpenAI-compatible SSE format
+        const payload = {
+          choices: [{
+            delta: { content: text },
+            index: 0,
+          }],
+        };
+        
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+        controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+        controller.close();
       }
+    });
 
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          const payload = { choices: [{ delta: { content: fullText }, index: 0 }] };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
-          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-          controller.close();
-        }
-      });
-
-      return new Response(stream, {
-        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-      });
-    }
+    return new Response(stream, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    });
   } catch (error) {
     console.error("Chat error:", error);
     return new Response(
