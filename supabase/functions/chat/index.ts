@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import Bytez from "https://cdn.jsdelivr.net/npm/bytez.js@latest/+esm";
+// Removed external Bytez import to use Lovable AI gateway
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -63,9 +63,9 @@ serve(async (req) => {
       );
     }
 
-    const BYTEZ_API_KEY = Deno.env.get("BYTEZ_API_KEY");
-    if (!BYTEZ_API_KEY) {
-      console.error("BYTEZ_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
       return new Response(
         JSON.stringify({ error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -75,53 +75,44 @@ serve(async (req) => {
     const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
     console.log(`Starting chat for coach type: ${coachType}`);
 
-    // Initialize Bytez SDK
-    const sdk = new Bytez(BYTEZ_API_KEY);
-    const model = sdk.model("openai/gpt-4.1");
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ],
+        stream: true,
+      }),
+    });
 
-    // Prepare messages with system prompt
-    const chatMessages = [
-      { role: "system", content: systemPrompt },
-      ...messages
-    ];
-
-    console.log("Sending request to Bytez API...");
-
-    // Run the model
-    const { error, output } = await model.run(chatMessages);
-
-    if (error) {
-      console.error("Bytez API error:", error);
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limits exceeded, please try again later." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Payment required, please add credits to your Lovable AI workspace." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const t = await response.text();
+      console.error("AI gateway error:", response.status, t);
       return new Response(
-        JSON.stringify({ error: "AI service error. Please try again." }),
+        JSON.stringify({ error: "AI gateway error" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("Received response from Bytez API");
-
-    // Convert Bytez output to SSE stream format
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        const content = output?.content || output?.message?.content || output;
-        const text = typeof content === 'string' ? content : JSON.stringify(content);
-        
-        // Send in OpenAI-compatible SSE format
-        const payload = {
-          choices: [{
-            delta: { content: text },
-            index: 0,
-          }],
-        };
-        
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
-        controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-        controller.close();
-      }
-    });
-
-    return new Response(stream, {
+    return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
