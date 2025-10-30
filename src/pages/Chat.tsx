@@ -70,6 +70,39 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const formatMessage = (content: string, role: string) => {
+    if (role === "user") {
+      return content.replace(/\n/g, "<br />");
+    }
+    
+    // AI message - parse markdown-like formatting
+    let formatted = content
+      // Bold text **text**
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+      // Bullet points
+      .replace(/^[•\-\*]\s+(.+)$/gm, '<li class="ml-4">$1</li>')
+      // Numbered lists
+      .replace(/^\d+\.\s+(.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+      // Line breaks
+      .replace(/\n\n/g, '</p><p class="mt-2">')
+      .replace(/\n/g, '<br />');
+    
+    // Wrap lists
+    formatted = formatted.replace(/(<li class="ml-4">.*?<\/li>(\s|<br \/>)*)+/gs, (match) => {
+      return '<ul class="list-disc space-y-1 my-2">' + match.replace(/<br \/>/g, '') + '</ul>';
+    });
+    formatted = formatted.replace(/(<li class="ml-4 list-decimal">.*?<\/li>(\s|<br \/>)*)+/gs, (match) => {
+      return '<ol class="list-decimal space-y-1 my-2">' + match.replace(/<br \/>/g, '') + '</ol>';
+    });
+    
+    // Wrap in paragraph if not already wrapped
+    if (!formatted.startsWith('<')) {
+      formatted = '<p>' + formatted + '</p>';
+    }
+    
+    return formatted;
+  };
+
   const checkUserAndLoadChat = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -363,7 +396,12 @@ export default function Chat() {
                         : "bg-muted"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <div 
+                      className="prose prose-sm max-w-none dark:prose-invert"
+                      dangerouslySetInnerHTML={{ 
+                        __html: formatMessage(message.content, message.role) 
+                      }}
+                    />
                   </div>
                 </div>
               ))}
