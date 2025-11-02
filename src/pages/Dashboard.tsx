@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
 import CoachCard from "@/components/CoachCard";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,14 +23,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/");
-  };
 
   if (loading || checkingAuth) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
@@ -52,10 +42,7 @@ export default function Dashboard() {
               AICOACHLY
             </h1>
           </div>
-          <Button variant="ghost" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <ProfileDropdown />
         </div>
       </header>
 
