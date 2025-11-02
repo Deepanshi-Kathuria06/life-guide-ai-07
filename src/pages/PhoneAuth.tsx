@@ -262,106 +262,35 @@ export default function PhoneAuth() {
             </TabsContent>
 
             <TabsContent value="login" className="space-y-6">
-              <Tabs defaultValue="email" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4">
-                  <TabsTrigger value="email" className="gap-2">
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </TabsTrigger>
-                  <TabsTrigger value="phone" className="gap-2">
-                    <Phone className="h-4 w-4" />
-                    Phone
-                  </TabsTrigger>
-                </TabsList>
+              <form onSubmit={handleEmailLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">Email</Label>
+                  <Input
+                    id="login-email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
 
-                <TabsContent value="email">
-                  <form onSubmit={handleEmailLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
-                      <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
-                      <Input
-                        id="login-password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full" disabled={loading} variant="gradient">
-                      {loading ? "Logging in..." : "Log In"}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="phone">
-                  {!otpSent ? (
-                    <form onSubmit={handleSendOTP} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="login-phone">Phone Number</Label>
-                        <Input
-                          id="login-phone"
-                          type="tel"
-                          placeholder="+1234567890"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          required
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Include country code (e.g., +1)
-                        </p>
-                      </div>
-
-                      <Button type="submit" className="w-full" disabled={loading} variant="gradient">
-                        {loading ? "Sending OTP..." : "Send OTP"}
-                      </Button>
-                    </form>
-                  ) : (
-                    <form onSubmit={handleVerifyOTP} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Enter 6-digit OTP</Label>
-                        <div className="flex justify-center">
-                          <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-                            <InputOTPGroup>
-                              <InputOTPSlot index={0} />
-                              <InputOTPSlot index={1} />
-                              <InputOTPSlot index={2} />
-                              <InputOTPSlot index={3} />
-                              <InputOTPSlot index={4} />
-                              <InputOTPSlot index={5} />
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </div>
-                      </div>
-
-                      <Button type="submit" className="w-full" disabled={loading || otp.length !== 6} variant="gradient">
-                        {loading ? "Verifying..." : "Verify OTP"}
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => setOtpSent(false)}
-                      >
-                        Change Number
-                      </Button>
-                    </form>
-                  )}
-                </TabsContent>
-              </Tabs>
+                <Button type="submit" className="w-full" disabled={loading} variant="gradient">
+                  {loading ? "Logging in..." : "Log In"}
+                </Button>
+              </form>
             </TabsContent>
           </Tabs>
         </Card>
