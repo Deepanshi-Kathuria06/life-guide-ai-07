@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import PhoneAuth from "./pages/PhoneAuth";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Pricing from "./pages/Pricing";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/auth" element={<PhoneAuth />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

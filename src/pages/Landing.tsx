@@ -125,10 +125,10 @@ export default function Landing() {
             </button>
           </nav>
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/login")}>
+            <Button variant="ghost" onClick={() => navigate("/auth")}>
               Log In
             </Button>
-            <Button variant="gradient" onClick={() => navigate("/signup")}>
+            <Button variant="gradient" onClick={() => navigate("/auth")}>
               Get Started
             </Button>
           </div>
@@ -157,7 +157,7 @@ export default function Landing() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" variant="gradient" onClick={() => navigate("/signup")} className="text-lg px-8">
+            <Button size="lg" variant="gradient" onClick={() => navigate("/auth")} className="text-lg px-8">
               <Sparkles className="h-5 w-5 mr-2" />
               Start Free Trial
             </Button>

@@ -131,6 +131,8 @@ serve(async (req) => {
   try {
     const { messages, coachType } = await req.json();
     
+    console.log(`Chat request - Coach: ${coachType}, Messages count: ${messages?.length || 0}`);
+    
     if (!messages || !Array.isArray(messages)) {
       return new Response(
         JSON.stringify({ error: "Messages array is required" }),
@@ -160,9 +162,10 @@ serve(async (req) => {
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...messages // Full conversation history for context/memory
         ],
         stream: true,
+        temperature: 0.7,
       }),
     });
 
