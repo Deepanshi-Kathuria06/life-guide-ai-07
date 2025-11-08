@@ -170,22 +170,36 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("OpenAI API error:", response.status, errorText);
+      
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limits exceeded, please try again later." }),
+          JSON.stringify({ error: "OpenAI rate limit exceeded. Please check your API usage limits or try again later." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       if (response.status === 401) {
         return new Response(
-          JSON.stringify({ error: "Invalid OpenAI API key. Please check your API key configuration." }),
+          JSON.stringify({ error: "Invalid OpenAI API key. Please verify your API key in the settings." }),
           { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      if (response.status === 402 || response.status === 403) {
+        return new Response(
+          JSON.stringify({ error: "OpenAI API payment required. Please check your OpenAI account billing." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (response.status === 400) {
+        return new Response(
+          JSON.stringify({ error: `Invalid request: ${errorText}` }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
       return new Response(
-        JSON.stringify({ error: "AI gateway error" }),
+        JSON.stringify({ error: `OpenAI API error (${response.status}): ${errorText}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
