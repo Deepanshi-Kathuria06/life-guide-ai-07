@@ -23,7 +23,7 @@ export default function PhoneAuth() {
   const [password, setPassword] = useState("");
   
   // Phone state
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+91");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   
@@ -53,7 +53,7 @@ export default function PhoneAuth() {
     } else {
       toast({
         title: "Welcome to CoachAI!",
-        description: "Your account has been created.",
+        description: "Your account has been created. Email verified successfully.",
       });
       navigate("/dashboard");
     }
@@ -238,13 +238,13 @@ export default function PhoneAuth() {
                         <Input
                           id="phone"
                           type="tel"
-                          placeholder="+1234567890"
+                          placeholder="+919876543210"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           required
                         />
                         <p className="text-xs text-muted-foreground">
-                          Include country code (e.g., +1)
+                          Include country code (e.g., +91 for India)
                         </p>
                       </div>
 
@@ -354,13 +354,13 @@ export default function PhoneAuth() {
                         <Input
                           id="login-phone"
                           type="tel"
-                          placeholder="+1234567890"
+                          placeholder="+919876543210"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           required
                         />
                         <p className="text-xs text-muted-foreground">
-                          Include country code (e.g., +1)
+                          Include country code (e.g., +91 for India)
                         </p>
                       </div>
 
