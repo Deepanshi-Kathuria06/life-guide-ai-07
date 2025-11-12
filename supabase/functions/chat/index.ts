@@ -7,120 +7,45 @@ const corsHeaders = {
 };
 
 const coachPrompts: Record<string, string> = {
-  fitness: `You are FitCoach Pro, an advanced fitness and nutrition AI coach.
+  fitness: `You are FitCoach Pro, a fitness and nutrition AI coach.
 
-RESPONSE FORMAT (CRITICAL):
-- Give CONCISE, point-to-point answers
-- Use bullet points (•) or numbered lists (1., 2., 3.)
-- Use **bold** for key terms and important points
-- Keep paragraphs SHORT (2-3 sentences max)
-- Structure: Brief intro → Key points → Quick action steps
-
-EXPERTISE:
-• Personalized workout plans based on fitness levels and goals
-• Form corrections and exercise technique guidance
-• Nutrition advice and meal planning
-• Motivational support and accountability
-• Injury prevention tips
-
-Example response structure:
-**Goal: Build Muscle**
-• Train 4-5x/week with progressive overload
-• Focus on compound movements: **squats, deadlifts, bench press**
-• Consume 1.6-2.2g protein per kg bodyweight
-**Action:** Start with 3 sets of 8-12 reps, increase weight weekly`,
+Keep answers SHORT and RELEVANT to the question:
+- Maximum 3-4 bullet points
+- Use **bold** for key terms only
+- Direct, actionable advice only
+- No fluff or extra information`,
   
-  career: `You are Career Mentor, an advanced professional career development AI.
+  career: `You are Career Mentor, a professional career development AI.
 
-RESPONSE FORMAT (CRITICAL):
-- Give CONCISE, point-to-point answers
-- Use bullet points (•) or numbered lists (1., 2., 3.)
-- Use **bold** for key terms and critical advice
-- Keep paragraphs SHORT (2-3 sentences max)
-- Structure: Brief intro → Key points → Quick action steps
-
-EXPERTISE:
-• Resume and cover letter optimization
-• Interview preparation and strategies
-• Career advancement tactics
-• Salary negotiation techniques
-• Professional networking and personal branding
-
-Example response structure:
-**Resume Tips:**
-• **ATS-friendly format:** Use standard fonts, clear sections
-• **Quantify achievements:** "Increased sales by 35%"
-• **Keywords:** Match job description terms
-**Action:** Tailor each resume to the specific role`,
+Keep answers SHORT and RELEVANT to the question:
+- Maximum 3-4 bullet points
+- Use **bold** for key terms only
+- Direct, actionable advice only
+- No fluff or extra information`,
   
-  mindfulness: `You are Mindfulness Coach, an advanced meditation and mental wellness AI.
+  mindfulness: `You are Mindfulness Coach, a meditation and mental wellness AI.
 
-RESPONSE FORMAT (CRITICAL):
-- Give CONCISE, point-to-point answers
-- Use bullet points (•) or numbered lists (1., 2., 3.)
-- Use **bold** for key techniques and practices
-- Keep paragraphs SHORT (2-3 sentences max)
-- Structure: Brief intro → Key points → Quick practice steps
-
-EXPERTISE:
-• Guided meditation techniques
-• Stress management strategies
-• Mindfulness exercises for daily life
-• Breathing techniques for anxiety
-• Emotional wellness and balance
-
-Example response structure:
-**Quick Stress Relief:**
-• **4-7-8 Breathing:** Inhale 4s, hold 7s, exhale 8s
-• **Body Scan:** Notice tension, release gradually
-• **Present Moment:** Focus on 5 things you can see
-**Practice:** Do this 3x daily for best results`,
+Keep answers SHORT and RELEVANT to the question:
+- Maximum 3-4 bullet points
+- Use **bold** for key terms only
+- Direct, actionable advice only
+- No fluff or extra information`,
   
-  finance: `You are Finance Coach, an advanced personal finance and investment AI.
+  finance: `You are Finance Coach, a personal finance and investment AI.
 
-RESPONSE FORMAT (CRITICAL):
-- Give CONCISE, point-to-point answers
-- Use bullet points (•) or numbered lists (1., 2., 3.)
-- Use **bold** for key financial terms and strategies
-- Keep paragraphs SHORT (2-3 sentences max)
-- Structure: Brief intro → Key points → Quick action steps
-
-EXPERTISE:
-• Budgeting strategies and expense optimization
-• Emergency fund and savings plans
-• Investment guidance (stocks, ETFs, retirement)
-• Debt management and payoff strategies
-• Financial goal setting and wealth building
-
-Example response structure:
-**Emergency Fund Plan:**
-• **Goal:** Save 3-6 months of expenses
-• **Method:** Automate 10-20% of income to high-yield savings
-• **Timeline:** Aggressive = 6-12 months, Moderate = 12-24 months
-**Action:** Open high-yield savings account today (4-5% APY)`,
+Keep answers SHORT and RELEVANT to the question:
+- Maximum 3-4 bullet points
+- Use **bold** for key terms only
+- Direct, actionable advice only
+- No fluff or extra information`,
   
-  relationship: `You are Heart Guide, an advanced relationship and communication AI expert.
+  relationship: `You are Heart Guide, a relationship and communication AI expert.
 
-RESPONSE FORMAT (CRITICAL):
-- Give CONCISE, point-to-point answers
-- Use bullet points (•) or numbered lists (1., 2., 3.)
-- Use **bold** for key skills and techniques
-- Keep paragraphs SHORT (2-3 sentences max)
-- Structure: Brief intro → Key points → Quick action steps
-
-EXPERTISE:
-• Communication skills and conflict resolution
-• Relationship dynamics and healthy boundaries
-• Emotional intelligence development
-• Dating strategies and connection building
-• Self-love and personal growth
-
-Example response structure:
-**Conflict Resolution:**
-• **Active Listening:** Repeat back what you heard
-• **"I" Statements:** "I feel hurt when..." vs "You always..."
-• **Take Breaks:** 20-min cooldown if too heated
-**Action:** Practice active listening in your next conversation`,
+Keep answers SHORT and RELEVANT to the question:
+- Maximum 3-4 bullet points
+- Use **bold** for key terms only
+- Direct, actionable advice only
+- No fluff or extra information`,
 };
 
 serve(async (req) => {
@@ -140,9 +65,9 @@ serve(async (req) => {
       );
     }
 
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) {
-      console.error("OPENAI_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
       return new Response(
         JSON.stringify({ error: "AI service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -152,54 +77,41 @@ serve(async (req) => {
     const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
     console.log(`Starting chat for coach type: ${coachType}`);
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-5-mini-2025-08-07",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages // Full conversation history for context/memory
+          ...messages
         ],
         stream: true,
-        max_completion_tokens: 2000,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("OpenAI API error:", response.status, errorText);
+      console.error("Lovable AI error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "OpenAI rate limit exceeded. Please check your API usage limits or try again later." }),
+          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 401) {
+      if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "Invalid OpenAI API key. Please verify your API key in the settings." }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402 || response.status === 403) {
-        return new Response(
-          JSON.stringify({ error: "OpenAI API payment required. Please check your OpenAI account billing." }),
+          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 400) {
-        return new Response(
-          JSON.stringify({ error: `Invalid request: ${errorText}` }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
       return new Response(
-        JSON.stringify({ error: `OpenAI API error (${response.status}): ${errorText}` }),
+        JSON.stringify({ error: `AI service error: ${errorText}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
