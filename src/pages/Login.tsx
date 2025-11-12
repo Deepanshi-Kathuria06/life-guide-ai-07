@@ -84,7 +84,7 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Button variant="link" className="p-0 text-primary" onClick={() => navigate("/signup")}>
+              <Button variant="link" className="p-0 text-primary" onClick={() => navigate("/auth")}>
                 Sign up
               </Button>
             </p>

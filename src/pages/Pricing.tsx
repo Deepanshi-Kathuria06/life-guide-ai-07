@@ -56,7 +56,7 @@ export default function Pricing() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      navigate("/signup");
+      navigate("/auth");
       return;
     }
 
@@ -82,10 +82,10 @@ export default function Pricing() {
             </h1>
           </div>
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/login")}>
+            <Button variant="ghost" onClick={() => navigate("/auth")}>
               Log In
             </Button>
-            <Button variant="gradient" onClick={() => navigate("/signup")}>
+            <Button variant="gradient" onClick={() => navigate("/auth")}>
               Get Started
             </Button>
           </div>

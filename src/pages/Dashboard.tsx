@@ -17,7 +17,7 @@ export default function Dashboard() {
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      navigate("/login");
+      navigate("/auth");
     } else {
       setCheckingAuth(false);
     }

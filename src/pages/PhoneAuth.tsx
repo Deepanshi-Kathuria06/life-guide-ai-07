@@ -34,9 +34,14 @@ export default function PhoneAuth() {
     e.preventDefault();
     setLoading(true);
 
+    const redirectUrl = `${window.location.origin}/dashboard`;
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     });
 
     if (error) {
@@ -85,10 +90,21 @@ export default function PhoneAuth() {
   // Phone OTP handlers
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate phone number format
+    if (!phone.startsWith('+')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid phone number",
+        description: "Please include country code (e.g., +1234567890)",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithOtp({
-      phone: phone,
+      phone: phone.trim(),
     });
 
     if (error) {
@@ -110,10 +126,20 @@ export default function PhoneAuth() {
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (otp.length !== 6) {
+      toast({
+        variant: "destructive",
+        title: "Invalid OTP",
+        description: "Please enter the complete 6-digit code.",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     const { error } = await supabase.auth.verifyOtp({
-      phone: phone,
+      phone: phone.trim(),
       token: otp,
       type: 'sms',
     });
@@ -124,6 +150,7 @@ export default function PhoneAuth() {
         title: "Verification failed",
         description: error.message,
       });
+      setOtp(""); // Clear OTP on error
     } else {
       toast({
         title: "Success!",
@@ -251,9 +278,22 @@ export default function PhoneAuth() {
                         type="button"
                         variant="outline"
                         className="w-full"
-                        onClick={() => setOtpSent(false)}
+                        onClick={() => {
+                          setOtpSent(false);
+                          setOtp("");
+                        }}
                       >
                         Change Number
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full"
+                        onClick={handleSendOTP}
+                        disabled={loading}
+                      >
+                        Resend OTP
                       </Button>
                     </form>
                   )}
@@ -262,35 +302,119 @@ export default function PhoneAuth() {
             </TabsContent>
 
             <TabsContent value="login" className="space-y-6">
-              <form onSubmit={handleEmailLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+              <Tabs defaultValue="email" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="email" className="gap-2">
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="gap-2">
+                    <Phone className="h-4 w-4" />
+                    Phone
+                  </TabsTrigger>
+                </TabsList>
 
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
+                <TabsContent value="email">
+                  <form onSubmit={handleEmailLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                <Button type="submit" className="w-full" disabled={loading} variant="gradient">
-                  {loading ? "Logging in..." : "Log In"}
-                </Button>
-              </form>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Input
+                        id="login-password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full" disabled={loading} variant="gradient">
+                      {loading ? "Logging in..." : "Log In"}
+                    </Button>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="phone">
+                  {!otpSent ? (
+                    <form onSubmit={handleSendOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-phone">Phone Number</Label>
+                        <Input
+                          id="login-phone"
+                          type="tel"
+                          placeholder="+1234567890"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Include country code (e.g., +1)
+                        </p>
+                      </div>
+
+                      <Button type="submit" className="w-full" disabled={loading} variant="gradient">
+                        {loading ? "Sending OTP..." : "Send OTP"}
+                      </Button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleVerifyOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Enter 6-digit OTP</Label>
+                        <div className="flex justify-center">
+                          <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                            <InputOTPGroup>
+                              <InputOTPSlot index={0} />
+                              <InputOTPSlot index={1} />
+                              <InputOTPSlot index={2} />
+                              <InputOTPSlot index={3} />
+                              <InputOTPSlot index={4} />
+                              <InputOTPSlot index={5} />
+                            </InputOTPGroup>
+                          </InputOTP>
+                        </div>
+                      </div>
+
+                      <Button type="submit" className="w-full" disabled={loading || otp.length !== 6} variant="gradient">
+                        {loading ? "Verifying..." : "Verify OTP"}
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setOtpSent(false);
+                          setOtp("");
+                        }}
+                      >
+                        Change Number
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full"
+                        onClick={handleSendOTP}
+                        disabled={loading}
+                      >
+                        Resend OTP
+                      </Button>
+                    </form>
+                  )}
+                </TabsContent>
+              </Tabs>
             </TabsContent>
           </Tabs>
         </Card>

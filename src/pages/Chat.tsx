@@ -106,7 +106,7 @@ export default function Chat() {
   const checkUserAndLoadChat = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      navigate("/login");
+      navigate("/auth");
       return;
     }
     await loadOrCreateChat(user.id);

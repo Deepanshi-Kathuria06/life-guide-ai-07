@@ -31,10 +31,10 @@ export default function About() {
             </button>
           </nav>
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/login")}>
+            <Button variant="ghost" onClick={() => navigate("/auth")}>
               Log In
             </Button>
-            <Button variant="gradient" onClick={() => navigate("/signup")}>
+            <Button variant="gradient" onClick={() => navigate("/auth")}>
               Get Started
             </Button>
           </div>
@@ -131,7 +131,7 @@ export default function About() {
           <p className="text-muted-foreground mb-8 text-lg">
             Be part of the future of personal development. Start your journey today.
           </p>
-          <Button size="lg" variant="gradient" onClick={() => navigate("/signup")}>
+          <Button size="lg" variant="gradient" onClick={() => navigate("/auth")}>
             Get Started Free
           </Button>
         </div>
@@ -155,7 +155,7 @@ export default function About() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><button onClick={() => navigate("/pricing")} className="hover:text-foreground transition-colors">Pricing</button></li>
                 <li><button onClick={() => navigate("/")} className="hover:text-foreground transition-colors">Features</button></li>
-                <li><button onClick={() => navigate("/signup")} className="hover:text-foreground transition-colors">Get Started</button></li>
+                <li><button onClick={() => navigate("/auth")} className="hover:text-foreground transition-colors">Get Started</button></li>
               </ul>
             </div>
             

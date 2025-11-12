@@ -18,9 +18,14 @@ export default function Signup() {
     e.preventDefault();
     setLoading(true);
 
+    const redirectUrl = `${window.location.origin}/dashboard`;
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     });
 
     if (error) {
@@ -32,7 +37,7 @@ export default function Signup() {
     } else {
       toast({
         title: "Welcome to CoachAI!",
-        description: "Your account has been created. You can now log in.",
+        description: "Your account has been created.",
       });
       navigate("/dashboard");
     }
@@ -88,7 +93,7 @@ export default function Signup() {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Button variant="link" className="p-0 text-primary" onClick={() => navigate("/login")}>
+              <Button variant="link" className="p-0 text-primary" onClick={() => navigate("/auth")}>
                 Log in
               </Button>
             </p>

@@ -281,7 +281,7 @@ export default function Landing() {
                       borderColor: `hsl(var(--${coach.color}))`,
                       color: `hsl(var(--${coach.color}))`
                     }}
-                    onClick={() => navigate("/signup")}
+                    onClick={() => navigate("/auth")}
                   >
                     Start Chatting
                   </Button>
@@ -414,7 +414,7 @@ export default function Landing() {
             <p className="text-white/90 mb-8 text-lg max-w-2xl mx-auto">
               Join thousands of people achieving their goals with personalized AI coaching. Start your free trial today.
             </p>
-            <Button size="lg" variant="secondary" onClick={() => navigate("/signup")} className="text-lg px-8">
+            <Button size="lg" variant="secondary" onClick={() => navigate("/auth")} className="text-lg px-8">
               <Sparkles className="h-5 w-5 mr-2" />
               Start Free Trial - No Credit Card Required
             </Button>
@@ -440,7 +440,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><button onClick={() => navigate("/pricing")} className="hover:text-foreground transition-colors">Pricing</button></li>
                 <li><button onClick={() => navigate("/")} className="hover:text-foreground transition-colors">Features</button></li>
-                <li><button onClick={() => navigate("/signup")} className="hover:text-foreground transition-colors">Get Started</button></li>
+                <li><button onClick={() => navigate("/auth")} className="hover:text-foreground transition-colors">Get Started</button></li>
               </ul>
             </div>
             
