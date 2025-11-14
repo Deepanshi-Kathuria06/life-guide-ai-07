@@ -32,14 +32,14 @@ export default function CoachCard({ type, name, description }: CoachCardProps) {
 
   return (
     <Card 
-      className="relative p-8 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden flex flex-col"
+      className="relative p-8 glass-morphism hover-lift transition-all duration-300 border-2 group overflow-hidden flex flex-col"
       style={{
         borderImage: `linear-gradient(135deg, hsl(var(--coach-${type})), transparent) 1`,
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="relative z-10 flex flex-col flex-grow">
-        <div className="text-5xl mb-4">{emoji}</div>
+        <div className="text-5xl mb-4 animate-float">{emoji}</div>
         <h3 className="text-xl font-semibold mb-3" style={{ color: `hsl(var(--coach-${type}))` }}>
           {name}
         </h3>

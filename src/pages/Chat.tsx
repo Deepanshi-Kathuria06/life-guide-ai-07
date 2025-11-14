@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Dumbbell, Briefcase, Brain, DollarSign, Heart } from "lucide-react";
+import VoiceInput from "@/components/VoiceInput";
+import InsightsPanel from "@/components/InsightsPanel";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
 
@@ -371,7 +373,11 @@ export default function Chat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="container mx-auto px-4 py-6 max-w-4xl space-y-6">
+          {messages.length > 5 && (
+            <InsightsPanel chatId={chatId} />
+          )}
+          
           {messages.length === 0 ? (
             <div className="text-center py-12">
               <div className={`w-16 h-16 rounded-2xl bg-${coach.color}/10 flex items-center justify-center mx-auto mb-4`}>
@@ -387,13 +393,13 @@ export default function Chat() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 transition-all duration-300 hover-lift ${
                       message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
+                        ? "bg-gradient-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
+                        : "glass-morphism"
                     }`}
                   >
                     <div 
@@ -412,19 +418,31 @@ export default function Chat() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-border bg-background">
+      <div className="border-t border-border bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
           <div className="flex gap-2">
+            <VoiceInput
+              onTranscript={(text) => setInput(text)}
+              disabled={loading}
+            />
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
-              placeholder="Type your message..."
+              placeholder="Type or speak your message..."
               disabled={loading}
-              className="flex-1"
+              className="flex-1 glass-morphism"
             />
-            <Button onClick={handleSend} disabled={loading || !input.trim()}>
-              <Send className="h-4 w-4" />
+            <Button 
+              onClick={handleSend} 
+              disabled={loading || !input.trim()}
+              className="bg-gradient-primary hover-lift"
+            >
+              {loading ? (
+                <Sparkles className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
