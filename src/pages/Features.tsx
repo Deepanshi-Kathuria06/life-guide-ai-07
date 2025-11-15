@@ -1,0 +1,93 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RitualBuilder from "@/components/RitualBuilder";
+import MoodAnalyzer from "@/components/MoodAnalyzer";
+import TimelineGenerator from "@/components/TimelineGenerator";
+import ReflectionJournal from "@/components/ReflectionJournal";
+
+export default function Features() {
+  const navigate = useNavigate();
+  const { hasAccess, loading } = useSubscription();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+    } else {
+      setCheckingAuth(false);
+    }
+  };
+
+  if (loading || checkingAuth) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!hasAccess) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <h1
+              className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent cursor-pointer"
+              onClick={() => navigate("/dashboard")}
+            >
+              AICOACHLY
+            </h1>
+          </div>
+          <ProfileDropdown />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-16">
+        <div className="mb-16 text-center">
+          <h2 className="text-5xl font-bold mb-4">
+            Advanced <span className="bg-gradient-primary bg-clip-text text-transparent">AI Features</span>
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Discover powerful AI-driven tools to transform your life
+          </p>
+        </div>
+
+        <Tabs defaultValue="ritual" className="max-w-6xl mx-auto">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8">
+            <TabsTrigger value="ritual">Ritual Builder</TabsTrigger>
+            <TabsTrigger value="mood">Mood Analyzer</TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            <TabsTrigger value="journal">Journal</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="ritual">
+            <RitualBuilder />
+          </TabsContent>
+
+          <TabsContent value="mood">
+            <MoodAnalyzer />
+          </TabsContent>
+
+          <TabsContent value="timeline">
+            <TimelineGenerator />
+          </TabsContent>
+
+          <TabsContent value="journal">
+            <ReflectionJournal />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+}

@@ -49,6 +49,147 @@ export type Database = {
           },
         ]
       }
+      habits: {
+        Row: {
+          created_at: string | null
+          habit_name: string
+          id: string
+          is_active: boolean | null
+          last_completed_at: string | null
+          reminder_time: string | null
+          streak_count: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          habit_name: string
+          id?: string
+          is_active?: boolean | null
+          last_completed_at?: string | null
+          reminder_time?: string | null
+          streak_count?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          habit_name?: string
+          id?: string
+          is_active?: boolean | null
+          last_completed_at?: string | null
+          reminder_time?: string | null
+          streak_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          ai_analysis: string | null
+          content: string
+          created_at: string | null
+          id: string
+          improvements: Json | null
+          patterns: Json | null
+          positivity_index: number | null
+          themes: Json | null
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          improvements?: Json | null
+          patterns?: Json | null
+          positivity_index?: number | null
+          themes?: Json | null
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          improvements?: Json | null
+          patterns?: Json | null
+          positivity_index?: number | null
+          themes?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      life_snapshots: {
+        Row: {
+          ai_analysis: string
+          created_at: string | null
+          id: string
+          life_score: number
+          priority: string
+          question_1: string
+          question_2: string
+          question_3: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis: string
+          created_at?: string | null
+          id?: string
+          life_score: number
+          priority: string
+          question_1: string
+          question_2: string
+          question_3: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: string
+          created_at?: string | null
+          id?: string
+          life_score?: number
+          priority?: string
+          question_1?: string
+          question_2?: string
+          question_3?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      life_timelines: {
+        Row: {
+          created_at: string | null
+          duration_months: number
+          goal: string
+          id: string
+          milestones: Json
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_months: number
+          goal: string
+          id?: string
+          milestones: Json
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_months?: number
+          goal?: string
+          id?: string
+          milestones?: Json
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           chat_id: string
@@ -81,6 +222,39 @@ export type Database = {
           },
         ]
       }
+      mood_entries: {
+        Row: {
+          created_at: string | null
+          detected_mood: string
+          emotions: Json
+          id: string
+          mood_score: number
+          mood_text: string
+          suggestions: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          detected_mood: string
+          emotions: Json
+          id?: string
+          mood_score: number
+          mood_text: string
+          suggestions: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          detected_mood?: string
+          emotions?: Json
+          id?: string
+          mood_score?: number
+          mood_text?: string
+          suggestions?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -108,6 +282,102 @@ export type Database = {
           subscription_status?: string
           trial_ends_at?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rituals: {
+        Row: {
+          created_at: string | null
+          duration: number
+          id: string
+          is_active: boolean | null
+          reminders: Json | null
+          ritual_type: string
+          steps: Json
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration: number
+          id?: string
+          is_active?: boolean | null
+          reminders?: Json | null
+          ritual_type: string
+          steps: Json
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number
+          id?: string
+          is_active?: boolean | null
+          reminders?: Json | null
+          ritual_type?: string
+          steps?: Json
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voice_wisdom: {
+        Row: {
+          created_at: string | null
+          emotion_score: number
+          id: string
+          suggestions: Json
+          summary: string
+          transcription: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          emotion_score: number
+          id?: string
+          suggestions: Json
+          summary: string
+          transcription: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          emotion_score?: number
+          id?: string
+          suggestions?: Json
+          summary?: string
+          transcription?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_plans: {
+        Row: {
+          ai_insights: string | null
+          created_at: string | null
+          id: string
+          plan_details: Json
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          ai_insights?: string | null
+          created_at?: string | null
+          id?: string
+          plan_details: Json
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          ai_insights?: string | null
+          created_at?: string | null
+          id?: string
+          plan_details?: Json
+          user_id?: string
+          week_start?: string
         }
         Relationships: []
       }

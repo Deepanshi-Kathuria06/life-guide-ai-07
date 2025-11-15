@@ -37,10 +37,18 @@ export default function Dashboard() {
       {/* Header */}
       <header className="border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               AICOACHLY
             </h1>
+            <nav className="hidden md:flex gap-6">
+              <button
+                onClick={() => navigate("/features")}
+                className="text-sm hover:text-primary transition-colors"
+              >
+                Advanced Features
+              </button>
+            </nav>
           </div>
           <ProfileDropdown />
         </div>
