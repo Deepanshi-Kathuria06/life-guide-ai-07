@@ -27,19 +27,20 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured');
 
-    const systemPrompt = `You are a life coaching AI. Based on 3 quick questions, provide:
+    const systemPrompt = `You are a life coaching AI. Based on 3 quick questions, provide a JSON response with:
 1. A Life Score (1-100) representing overall life balance
 2. Today's Top Priority (one clear, actionable item)
 3. Brief AI Analysis (2-3 sentences)
 
-Be encouraging, specific, and actionable.`;
+Be encouraging, specific, and actionable. Return ONLY valid JSON, no markdown formatting.`;
 
     const userPrompt = `Questions answered:
 1. ${question1}
 2. ${question2}
 3. ${question3}
 
-Provide Life Score, Priority, and Analysis in JSON format: {"lifeScore": number, "priority": "string", "analysis": "string"}`;
+Return ONLY this JSON structure with no additional text or formatting:
+{"lifeScore": number, "priority": "string", "analysis": "string"}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -73,7 +74,12 @@ Provide Life Score, Priority, and Analysis in JSON format: {"lifeScore": number,
     }
 
     const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
+    let content = data.choices[0].message.content;
+    
+    // Remove markdown code blocks if present
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    const result = JSON.parse(content);
 
     // Save to database
     const { error: dbError } = await supabaseClient

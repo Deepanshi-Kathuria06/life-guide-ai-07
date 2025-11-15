@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSubscription } from "@/hooks/useSubscription";
 import CoachCard from "@/components/CoachCard";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
+import LifeSnapshotWidget from "@/components/LifeSnapshotWidget";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -56,6 +57,10 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-16">
+        <div className="mb-12 max-w-2xl mx-auto">
+          <LifeSnapshotWidget />
+        </div>
+
         <div className="mb-16 text-center">
           <h2 className="text-5xl font-bold mb-4">
             Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">Coach</span>
@@ -65,7 +70,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <CoachCard
             type="fitness"
             name="Fitness Coach"
