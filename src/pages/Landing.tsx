@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import LifeSnapshotWidget from "@/components/LifeSnapshotWidget";
 import MiniAIDemo from "@/components/MiniAIDemo";
-import { 
+import {
   Dumbbell, Briefcase, Brain, DollarSign, Heart, Sparkles, 
   Check, Star, TrendingUp, Users, Clock, Shield,
   ChevronDown
@@ -198,13 +197,6 @@ export default function Landing() {
               <div className="text-muted-foreground">{stat.label}</div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Life Snapshot Widget */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto">
-          <LifeSnapshotWidget />
         </div>
       </section>
 
