@@ -25,6 +25,27 @@ export default function ProgressTracker({ chatId, coachType }: ProgressTrackerPr
 
   useEffect(() => {
     if (chatId) loadProgress();
+
+    // Real-time updates
+    const channel = supabase
+      .channel('progress-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `chat_id=eq.${chatId}`
+        },
+        () => {
+          loadProgress();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [chatId]);
 
   const loadProgress = async () => {
