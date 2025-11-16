@@ -11,7 +11,7 @@ import VoiceInput from "@/components/VoiceInput";
 import InsightsPanel from "@/components/InsightsPanel";
 import ProgressTracker from "@/components/ProgressTracker";
 import GoalsManager from "@/components/GoalsManager";
-import ActionPlansGenerator from "@/components/ActionPlansGenerator";
+import SessionInsights from "@/components/SessionInsights";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
 
@@ -382,7 +382,7 @@ export default function Chat() {
             <div className="lg:col-span-1 space-y-4">
               <ProgressTracker chatId={chatId} coachType={coachType || ''} />
               <GoalsManager coachType={coachType || ''} />
-              <ActionPlansGenerator coachType={coachType || ''} />
+              <SessionInsights chatId={chatId} coachType={coachType || ''} />
             </div>
 
             {/* Chat Messages Area */}
