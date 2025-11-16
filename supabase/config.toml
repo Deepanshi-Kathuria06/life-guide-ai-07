@@ -2,3 +2,24 @@ project_id = "qukfyxcvfrssfydsaivk"
 
 [functions.chat]
 verify_jwt = false
+
+[functions.generate-action-plan]
+verify_jwt = false
+
+[functions.generate-insights]
+verify_jwt = false
+
+[functions.generate-life-snapshot]
+verify_jwt = false
+
+[functions.generate-ritual]
+verify_jwt = false
+
+[functions.generate-timeline]
+verify_jwt = false
+
+[functions.analyze-journal]
+verify_jwt = false
+
+[functions.analyze-mood]
+verify_jwt = false

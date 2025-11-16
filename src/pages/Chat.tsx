@@ -9,6 +9,9 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Dumbbell, Briefcase, Brain, DollarSign, Heart } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 import InsightsPanel from "@/components/InsightsPanel";
+import ProgressTracker from "@/components/ProgressTracker";
+import GoalsManager from "@/components/GoalsManager";
+import ActionPlansGenerator from "@/components/ActionPlansGenerator";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
 
@@ -371,12 +374,22 @@ export default function Chat() {
         </div>
       </header>
 
-      {/* Messages */}
+      {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-6 max-w-4xl space-y-6">
-          {messages.length > 5 && (
-            <InsightsPanel chatId={chatId} />
-          )}
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Sidebar with Advanced Features */}
+            <div className="lg:col-span-1 space-y-4">
+              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
+              <GoalsManager coachType={coachType || ''} />
+              <ActionPlansGenerator coachType={coachType || ''} />
+            </div>
+
+            {/* Chat Messages Area */}
+            <div className="lg:col-span-2 space-y-6">
+              {messages.length > 5 && (
+                <InsightsPanel chatId={chatId} />
+              )}
           
           {messages.length === 0 ? (
             <div className="text-center py-12">
@@ -414,6 +427,8 @@ export default function Chat() {
               <div ref={messagesEndRef} />
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
 
