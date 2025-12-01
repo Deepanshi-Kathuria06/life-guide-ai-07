@@ -240,6 +240,9 @@ export default function Chat() {
     setMessages((prev) => [...prev, tempAiMsg]);
 
     try {
+      // Get current user ID for memory context
+      const { data: { user } } = await supabase.auth.getUser();
+      
       // Stream AI response
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
       const response = await fetch(CHAT_URL, {
@@ -253,6 +256,8 @@ export default function Chat() {
             .map((m) => ({ role: m.role, content: m.content }))
             .concat([{ role: "user", content: userMessage }]),
           coachType: coachType,
+          chatId: chatId,
+          userId: user?.id,
         }),
       });
 
