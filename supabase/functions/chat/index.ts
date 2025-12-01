@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.1';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
@@ -54,9 +55,9 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, coachType } = await req.json();
+    const { messages, coachType, chatId, userId } = await req.json();
     
-    console.log(`Chat request - Coach: ${coachType}, Messages count: ${messages?.length || 0}`);
+    console.log(`Chat request - Coach: ${coachType}, Messages count: ${messages?.length || 0}, ChatId: ${chatId}`);
     
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -74,8 +75,64 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = coachPrompts[coachType] || coachPrompts.fitness;
-    console.log(`Starting chat for coach type: ${coachType}`);
+    // Build memory context from previous chats
+    let memoryContext = "";
+    if (chatId && userId) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Get previous chats for this coach type (excluding current chat)
+        const { data: previousChats } = await supabase
+          .from('chats')
+          .select('id, title, created_at')
+          .eq('user_id', userId)
+          .eq('coach_type', coachType)
+          .neq('id', chatId)
+          .order('updated_at', { ascending: false })
+          .limit(5);
+
+        if (previousChats && previousChats.length > 0) {
+          // Get recent messages from previous chats for context
+          const chatIds = previousChats.map(c => c.id);
+          const { data: previousMessages } = await supabase
+            .from('messages')
+            .select('content, role, chat_id, created_at')
+            .in('chat_id', chatIds)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+          if (previousMessages && previousMessages.length > 0) {
+            // Group messages by chat and create summaries
+            const chatSummaries = previousChats.map(chat => {
+              const chatMsgs = previousMessages.filter(m => m.chat_id === chat.id);
+              if (chatMsgs.length === 0) return null;
+              
+              // Get the first few exchanges
+              const summary = chatMsgs
+                .reverse()
+                .slice(0, 6)
+                .map(m => `${m.role}: ${m.content.substring(0, 150)}`)
+                .join('\n');
+              
+              return `Previous conversation (${new Date(chat.created_at).toLocaleDateString()}):\n${summary}`;
+            }).filter(Boolean).join('\n\n');
+
+            if (chatSummaries) {
+              memoryContext = `\n\nPREVIOUS CONVERSATION CONTEXT (use this to provide personalized, context-aware responses):\n${chatSummaries}\n\nRemember these past conversations when responding. Reference them naturally when relevant.`;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading memory context:', error);
+        // Continue without memory context if there's an error
+      }
+    }
+
+    const basePrompt = coachPrompts[coachType] || coachPrompts.fitness;
+    const systemPrompt = basePrompt + memoryContext;
+    console.log(`Starting chat for coach type: ${coachType} with memory: ${memoryContext ? 'YES' : 'NO'}`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
