@@ -11,7 +11,7 @@ import VoiceInput from "@/components/VoiceInput";
 import InsightsPanel from "@/components/InsightsPanel";
 import ProgressTracker from "@/components/ProgressTracker";
 import GoalsManager from "@/components/GoalsManager";
-import SessionInsights from "@/components/SessionInsights";
+import ChatHistory from "@/components/ChatHistory";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
 
@@ -131,28 +131,48 @@ export default function Chat() {
       setChatId(existingChats[0].id);
       await loadMessages(existingChats[0].id);
     } else {
-      // Create new chat
-      const { data: newChat, error } = await supabase
-        .from("chats")
-        .insert({
-          user_id: userId,
-          coach_type: coachType,
-          title: `${coach?.name} Chat`,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to create chat",
-        });
-        return;
-      }
-
-      setChatId(newChat.id);
+      await createNewChat(userId);
     }
+  };
+
+  const createNewChat = async (userId?: string) => {
+    let user_id = userId;
+    if (!user_id) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      user_id = user.id;
+    }
+
+    const { data: newChat, error } = await supabase
+      .from("chats")
+      .insert({
+        user_id: user_id,
+        coach_type: coachType,
+        title: `${coach?.name} Chat - ${new Date().toLocaleDateString()}`,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create chat",
+      });
+      return;
+    }
+
+    setChatId(newChat.id);
+    setMessages([]);
+  };
+
+  const handleChatSelect = async (selectedChatId: string) => {
+    setChatId(selectedChatId);
+    await loadMessages(selectedChatId);
+  };
+
+  const handleNewChat = () => {
+    createNewChat();
   };
 
   const loadMessages = async (chatId: string) => {
@@ -380,9 +400,14 @@ export default function Chat() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Sidebar with Advanced Features */}
             <div className="lg:col-span-1 space-y-4">
+              <ChatHistory 
+                coachType={coachType || ''} 
+                currentChatId={chatId}
+                onChatSelect={handleChatSelect}
+                onNewChat={handleNewChat}
+              />
               <ProgressTracker chatId={chatId} coachType={coachType || ''} />
-              <GoalsManager coachType={coachType || ''} />
-              <SessionInsights chatId={chatId} coachType={coachType || ''} />
+              <GoalsManager coachType={coachType || ''} chatId={chatId} />
             </div>
 
             {/* Chat Messages Area */}

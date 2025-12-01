@@ -15,39 +15,44 @@ interface Goal {
 
 interface GoalsManagerProps {
   coachType: string;
+  chatId: string | null;
 }
 
-export default function GoalsManager({ coachType }: GoalsManagerProps) {
+export default function GoalsManager({ coachType, chatId }: GoalsManagerProps) {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [newGoal, setNewGoal] = useState("");
   const [loading, setLoading] = useState(false);
   const [addingGoal, setAddingGoal] = useState(false);
 
   useEffect(() => {
-    loadGoals();
+    if (chatId) {
+      loadGoals();
 
-    // Real-time updates
-    const channel = supabase
-      .channel('goals-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'habits'
-        },
-        () => {
-          loadGoals();
-        }
-      )
-      .subscribe();
+      // Real-time updates
+      const channel = supabase
+        .channel('goals-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'habits'
+          },
+          () => {
+            loadGoals();
+          }
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [coachType]);
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [coachType, chatId]);
 
   const loadGoals = async () => {
+    if (!chatId) return;
+    
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -61,13 +66,15 @@ export default function GoalsManager({ coachType }: GoalsManagerProps) {
 
       if (error) throw error;
 
-      // Transform habits to goals format
-      const goalsData = data?.map(habit => ({
-        id: habit.id,
-        title: habit.habit_name,
-        completed: habit.last_completed_at !== null,
-        created_at: habit.created_at || new Date().toISOString(),
-      })) || [];
+      // Filter goals by coach type - stored with coach prefix
+      const goalsData = data
+        ?.filter(habit => habit.habit_name.startsWith(`[${coachType}]`))
+        .map(habit => ({
+          id: habit.id,
+          title: habit.habit_name.replace(`[${coachType}]`, '').trim(),
+          completed: habit.last_completed_at !== null,
+          created_at: habit.created_at || new Date().toISOString(),
+        })) || [];
 
       setGoals(goalsData);
     } catch (error: any) {
@@ -78,18 +85,19 @@ export default function GoalsManager({ coachType }: GoalsManagerProps) {
   };
 
   const addGoal = async () => {
-    if (!newGoal.trim()) return;
+    if (!newGoal.trim() || !chatId) return;
 
     setAddingGoal(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Prefix with coach type to keep goals separate per coach
       const { error } = await supabase
         .from("habits")
         .insert({
           user_id: user.id,
-          habit_name: newGoal,
+          habit_name: `[${coachType}] ${newGoal.trim()}`,
           is_active: true,
         });
 
