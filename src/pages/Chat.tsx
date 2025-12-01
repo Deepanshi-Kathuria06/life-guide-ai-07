@@ -374,9 +374,9 @@ export default function Chat() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="border-b border-border flex-shrink-0">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
@@ -399,96 +399,101 @@ export default function Chat() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Sidebar with Advanced Features */}
-            <div className="lg:col-span-1 space-y-4">
-              <ChatHistory 
-                coachType={coachType || ''} 
-                currentChatId={chatId}
-                onChatSelect={handleChatSelect}
-                onNewChat={handleNewChat}
-              />
-              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
-              <GoalsManager coachType={coachType || ''} chatId={chatId} />
-            </div>
+      {/* Main Content Area - Flex container */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Fixed Left Sidebar */}
+        <aside className="w-80 border-r border-border overflow-y-auto flex-shrink-0">
+          <div className="p-4 space-y-4">
+            <ChatHistory 
+              coachType={coachType || ''} 
+              currentChatId={chatId}
+              onChatSelect={handleChatSelect}
+              onNewChat={handleNewChat}
+            />
+            <ProgressTracker chatId={chatId} coachType={coachType || ''} />
+            <GoalsManager coachType={coachType || ''} chatId={chatId} />
+          </div>
+        </aside>
 
-            {/* Chat Messages Area */}
-            <div className="lg:col-span-2 space-y-6">
+        {/* Chat Area with independent scroll and fixed input */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Scrollable Messages Area */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="container mx-auto px-6 py-6 max-w-4xl">
               {messages.length > 5 && (
-                <InsightsPanel chatId={chatId} />
+                <div className="mb-6">
+                  <InsightsPanel chatId={chatId} />
+                </div>
               )}
           
-          {messages.length === 0 ? (
-            <div className="text-center py-12">
-              <div className={`w-16 h-16 rounded-2xl bg-${coach.color}/10 flex items-center justify-center mx-auto mb-4`}>
-                <Icon className={`h-8 w-8 text-${coach.color}`} />
-              </div>
-              <h2 className="text-2xl font-semibold mb-2">Start a conversation</h2>
-              <p className="text-muted-foreground">
-                Ask me anything about {coach.name.toLowerCase().replace(" coach", "")}!
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 transition-all duration-300 hover-lift ${
-                      message.role === "user"
-                        ? "bg-gradient-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
-                        : "glass-morphism"
-                    }`}
-                  >
-                    <div 
-                      className="prose prose-sm max-w-none dark:prose-invert"
-                      dangerouslySetInnerHTML={{ 
-                        __html: formatMessage(message.content, message.role) 
-                      }}
-                    />
+              {messages.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className={`w-16 h-16 rounded-2xl bg-${coach.color}/10 flex items-center justify-center mx-auto mb-4`}>
+                    <Icon className={`h-8 w-8 text-${coach.color}`} />
                   </div>
+                  <h2 className="text-2xl font-semibold mb-2">Start a conversation</h2>
+                  <p className="text-muted-foreground">
+                    Ask me anything about {coach.name.toLowerCase().replace(" coach", "")}!
+                  </p>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
+              ) : (
+                <div className="space-y-6">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl px-4 py-3 transition-all duration-300 hover-lift ${
+                          message.role === "user"
+                            ? "bg-gradient-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
+                            : "glass-morphism"
+                        }`}
+                      >
+                        <div 
+                          className="prose prose-sm max-w-none dark:prose-invert"
+                          dangerouslySetInnerHTML={{ 
+                            __html: formatMessage(message.content, message.role) 
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Input */}
-      <div className="border-t border-border bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 max-w-4xl">
-          <div className="flex gap-2">
-            <VoiceInput
-              onTranscript={(text) => setInput(text)}
-              disabled={loading}
-            />
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
-              placeholder="Type or speak your message..."
-              disabled={loading}
-              className="flex-1 glass-morphism"
-            />
-            <Button 
-              onClick={handleSend} 
-              disabled={loading || !input.trim()}
-              className="bg-gradient-primary hover-lift"
-            >
-              {loading ? (
-                <Sparkles className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
+          {/* Fixed Input Bar */}
+          <div className="border-t border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
+            <div className="container mx-auto px-6 py-4 max-w-4xl">
+              <div className="flex gap-2">
+                <VoiceInput
+                  onTranscript={(text) => setInput(text)}
+                  disabled={loading}
+                />
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
+                  placeholder="Type or speak your message..."
+                  disabled={loading}
+                  className="flex-1 glass-morphism"
+                />
+                <Button 
+                  onClick={handleSend} 
+                  disabled={loading || !input.trim()}
+                  className="bg-gradient-primary hover-lift"
+                >
+                  {loading ? (
+                    <Sparkles className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
