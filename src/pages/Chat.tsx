@@ -81,29 +81,20 @@ export default function Chat() {
       return content.replace(/\n/g, "<br />");
     }
     
-    // AI message - parse markdown-like formatting
+    // AI message - parse markdown-like formatting for detailed paragraphs
     let formatted = content
       // Bold text **text**
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
-      // Bullet points
-      .replace(/^[•\-\*]\s+(.+)$/gm, '<li class="ml-4">$1</li>')
-      // Numbered lists
-      .replace(/^\d+\.\s+(.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
-      // Line breaks
-      .replace(/\n\n/g, '</p><p class="mt-2">')
+      // Italic text *text*
+      .replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>')
+      // Paragraph breaks
+      .replace(/\n\n/g, '</p><p class="mt-3 leading-relaxed">')
+      // Single line breaks
       .replace(/\n/g, '<br />');
-    
-    // Wrap lists
-    formatted = formatted.replace(/(<li class="ml-4">.*?<\/li>(\s|<br \/>)*)+/gs, (match) => {
-      return '<ul class="list-disc space-y-1 my-2">' + match.replace(/<br \/>/g, '') + '</ul>';
-    });
-    formatted = formatted.replace(/(<li class="ml-4 list-decimal">.*?<\/li>(\s|<br \/>)*)+/gs, (match) => {
-      return '<ol class="list-decimal space-y-1 my-2">' + match.replace(/<br \/>/g, '') + '</ol>';
-    });
     
     // Wrap in paragraph if not already wrapped
     if (!formatted.startsWith('<')) {
-      formatted = '<p>' + formatted + '</p>';
+      formatted = '<p class="leading-relaxed">' + formatted + '</p>';
     }
     
     return formatted;
@@ -406,14 +397,14 @@ export default function Chat() {
         <aside className="w-80 border-r border-border flex-shrink-0">
           <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
+              <GoalsManager coachType={coachType || ''} chatId={chatId} />
+              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
               <ChatHistory 
                 coachType={coachType || ''} 
                 currentChatId={chatId}
                 onChatSelect={handleChatSelect}
                 onNewChat={handleNewChat}
               />
-              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
-              <GoalsManager coachType={coachType || ''} chatId={chatId} />
             </div>
           </ScrollArea>
         </aside>
