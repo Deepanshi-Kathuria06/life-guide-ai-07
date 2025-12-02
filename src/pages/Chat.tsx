@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles, ArrowLeft, Send, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -402,23 +403,25 @@ export default function Chat() {
       {/* Main Content Area - Flex container */}
       <div className="flex flex-1 overflow-hidden">
         {/* Fixed Left Sidebar */}
-        <aside className="w-80 border-r border-border overflow-y-auto flex-shrink-0">
-          <div className="p-4 space-y-4">
-            <ChatHistory 
-              coachType={coachType || ''} 
-              currentChatId={chatId}
-              onChatSelect={handleChatSelect}
-              onNewChat={handleNewChat}
-            />
-            <ProgressTracker chatId={chatId} coachType={coachType || ''} />
-            <GoalsManager coachType={coachType || ''} chatId={chatId} />
-          </div>
+        <aside className="w-80 border-r border-border flex-shrink-0">
+          <ScrollArea className="h-full">
+            <div className="p-4 space-y-4">
+              <ChatHistory 
+                coachType={coachType || ''} 
+                currentChatId={chatId}
+                onChatSelect={handleChatSelect}
+                onNewChat={handleNewChat}
+              />
+              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
+              <GoalsManager coachType={coachType || ''} chatId={chatId} />
+            </div>
+          </ScrollArea>
         </aside>
 
         {/* Chat Area with independent scroll and fixed input */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Scrollable Messages Area */}
-          <div className="flex-1 overflow-y-auto">
+          <ScrollArea className="flex-1">
             <div className="container mx-auto px-6 py-6 max-w-4xl">
               {messages.length > 5 && (
                 <div className="mb-6">
@@ -463,7 +466,7 @@ export default function Chat() {
                 </div>
               )}
             </div>
-          </div>
+          </ScrollArea>
 
           {/* Fixed Input Bar */}
           <div className="border-t border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
