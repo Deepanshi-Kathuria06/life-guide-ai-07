@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, ArrowLeft, Send, Trash2 } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sparkles, ArrowLeft, Send, Trash2, Menu } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -59,6 +60,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const coach = coachType ? coachInfo[coachType] : null;
@@ -81,18 +83,18 @@ export default function Chat() {
       return content.replace(/\n/g, "<br />");
     }
     
-    // AI message - parse markdown-like formatting for detailed paragraphs
+    // AI message - ChatGPT style formatting
     let formatted = content
       // Bold text **text**
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
       // Italic text *text*
       .replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>')
       // Paragraph breaks
-      .replace(/\n\n/g, '</p><p class="mt-3 leading-relaxed">')
+      .replace(/\n\n/g, '</p><p class="mt-4 leading-relaxed">')
       // Single line breaks
       .replace(/\n/g, '<br />');
     
-    // Wrap in paragraph if not already wrapped
+    // Wrap in paragraph
     if (!formatted.startsWith('<')) {
       formatted = '<p class="leading-relaxed">' + formatted + '</p>';
     }
@@ -110,7 +112,6 @@ export default function Chat() {
   };
 
   const loadOrCreateChat = async (userId: string) => {
-    // Try to find existing chat
     const { data: existingChats } = await supabase
       .from("chats")
       .select("*")
@@ -161,10 +162,12 @@ export default function Chat() {
   const handleChatSelect = async (selectedChatId: string) => {
     setChatId(selectedChatId);
     await loadMessages(selectedChatId);
+    setSidebarOpen(false);
   };
 
   const handleNewChat = () => {
     createNewChat();
+    setSidebarOpen(false);
   };
 
   const loadMessages = async (chatId: string) => {
@@ -193,7 +196,6 @@ export default function Chat() {
     setInput("");
     setLoading(true);
 
-    // Add user message to UI
     const tempUserMsg: Message = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -202,7 +204,6 @@ export default function Chat() {
     };
     setMessages((prev) => [...prev, tempUserMsg]);
 
-    // Save user message to database
     const { error: userMsgError } = await supabase
       .from("messages")
       .insert({
@@ -221,7 +222,6 @@ export default function Chat() {
       return;
     }
 
-    // Add placeholder for AI message that will be updated
     const tempAiMsgId = `temp-ai-${Date.now()}`;
     const tempAiMsg: Message = {
       id: tempAiMsgId,
@@ -232,10 +232,8 @@ export default function Chat() {
     setMessages((prev) => [...prev, tempAiMsg]);
 
     try {
-      // Get current user ID for memory context
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Stream AI response
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
       const response = await fetch(CHAT_URL, {
         method: "POST",
@@ -293,7 +291,6 @@ export default function Chat() {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               aiResponseContent += content;
-              // Update the AI message in UI
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === tempAiMsgId ? { ...m, content: aiResponseContent } : m
@@ -307,7 +304,6 @@ export default function Chat() {
         }
       }
 
-      // Save final AI message to database
       if (aiResponseContent) {
         await supabase.from("messages").insert({
           chat_id: chatId,
@@ -322,7 +318,6 @@ export default function Chat() {
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to get AI response",
       });
-      // Remove the temp AI message on error
       setMessages((prev) => prev.filter((m) => m.id !== tempAiMsgId));
     }
 
@@ -353,6 +348,20 @@ export default function Chat() {
     });
   };
 
+  // Sidebar content component
+  const SidebarContent = () => (
+    <div className="p-4 space-y-4">
+      <GoalsManager coachType={coachType || ''} chatId={chatId} />
+      <ProgressTracker chatId={chatId} coachType={coachType || ''} />
+      <ChatHistory 
+        coachType={coachType || ''} 
+        currentChatId={chatId}
+        onChatSelect={handleChatSelect}
+        onNewChat={handleNewChat}
+      />
+    </div>
+  );
+
   if (subscriptionLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
   }
@@ -369,83 +378,88 @@ export default function Chat() {
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
       <header className="border-b border-border flex-shrink-0">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <div className="px-3 sm:px-4 py-3 sm:py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Mobile menu button */}
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 p-0">
+                <ScrollArea className="h-full">
+                  <SidebarContent />
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
+            
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} className="hidden sm:flex">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg bg-${coach.color}/10 flex items-center justify-center`}>
-                <Icon className={`h-5 w-5 text-${coach.color}`} />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-${coach.color}/10 flex items-center justify-center`}>
+                <Icon className={`h-4 w-4 sm:h-5 sm:w-5 text-${coach.color}`} />
               </div>
               <div>
-                <h1 className="text-xl font-semibold">{coach.name}</h1>
-                <p className="text-sm text-muted-foreground">AI-Powered Guidance</p>
+                <h1 className="text-base sm:text-xl font-semibold">{coach.name}</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">AI-Powered Guidance</p>
               </div>
             </div>
           </div>
-          <Button variant="ghost" onClick={handleClearChat}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Clear Chat
+          <Button variant="ghost" size="sm" onClick={handleClearChat} className="text-xs sm:text-sm">
+            <Trash2 className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Clear Chat</span>
           </Button>
         </div>
       </header>
 
-      {/* Main Content Area - Flex container */}
+      {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Fixed Left Sidebar */}
-        <aside className="w-80 border-r border-border flex-shrink-0">
+        {/* Desktop Sidebar - hidden on mobile */}
+        <aside className="hidden lg:block w-80 border-r border-border flex-shrink-0">
           <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              <GoalsManager coachType={coachType || ''} chatId={chatId} />
-              <ProgressTracker chatId={chatId} coachType={coachType || ''} />
-              <ChatHistory 
-                coachType={coachType || ''} 
-                currentChatId={chatId}
-                onChatSelect={handleChatSelect}
-                onNewChat={handleNewChat}
-              />
-            </div>
+            <SidebarContent />
           </ScrollArea>
         </aside>
 
-        {/* Chat Area with independent scroll and fixed input */}
+        {/* Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Scrollable Messages Area */}
+          {/* Scrollable Messages */}
           <ScrollArea className="flex-1">
-            <div className="container mx-auto px-6 py-6 max-w-4xl">
+            <div className="px-3 sm:px-6 py-4 sm:py-6 max-w-4xl mx-auto">
               {messages.length > 5 && (
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <InsightsPanel chatId={chatId} />
                 </div>
               )}
           
               {messages.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className={`w-16 h-16 rounded-2xl bg-${coach.color}/10 flex items-center justify-center mx-auto mb-4`}>
-                    <Icon className={`h-8 w-8 text-${coach.color}`} />
+                <div className="text-center py-8 sm:py-12">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-${coach.color}/10 flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
+                    <Icon className={`h-6 w-6 sm:h-8 sm:w-8 text-${coach.color}`} />
                   </div>
-                  <h2 className="text-2xl font-semibold mb-2">Start a conversation</h2>
-                  <p className="text-muted-foreground">
+                  <h2 className="text-xl sm:text-2xl font-semibold mb-2">Start a conversation</h2>
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Ask me anything about {coach.name.toLowerCase().replace(" coach", "")}!
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {messages.map((message) => (
                     <div
                       key={message.id}
                       className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
                     >
                       <div
-                        className={`max-w-[80%] rounded-2xl px-4 py-3 transition-all duration-300 hover-lift ${
+                        className={`max-w-[90%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 transition-all duration-300 ${
                           message.role === "user"
                             ? "bg-gradient-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
                             : "glass-morphism"
                         }`}
                       >
                         <div 
-                          className="prose prose-sm max-w-none dark:prose-invert"
+                          className="prose prose-sm max-w-none dark:prose-invert text-sm sm:text-base"
                           dangerouslySetInnerHTML={{ 
                             __html: formatMessage(message.content, message.role) 
                           }}
@@ -461,7 +475,7 @@ export default function Chat() {
 
           {/* Fixed Input Bar */}
           <div className="border-t border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
-            <div className="container mx-auto px-6 py-4 max-w-4xl">
+            <div className="px-3 sm:px-6 py-3 sm:py-4 max-w-4xl mx-auto">
               <div className="flex gap-2">
                 <VoiceInput
                   onTranscript={(text) => setInput(text)}
@@ -471,14 +485,15 @@ export default function Chat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
-                  placeholder="Type or speak your message..."
+                  placeholder="Type your message..."
                   disabled={loading}
-                  className="flex-1 glass-morphism"
+                  className="flex-1 glass-morphism text-sm sm:text-base"
                 />
                 <Button 
                   onClick={handleSend} 
                   disabled={loading || !input.trim()}
                   className="bg-gradient-primary hover-lift"
+                  size="icon"
                 >
                   {loading ? (
                     <Sparkles className="h-4 w-4 animate-spin" />
