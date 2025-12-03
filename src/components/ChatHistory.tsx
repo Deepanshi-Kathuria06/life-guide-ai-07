@@ -25,27 +25,6 @@ export default function ChatHistory({ coachType, currentChatId, onChatSelect, on
 
   useEffect(() => {
     loadChats();
-    
-    // Set up realtime listener
-    const channel = supabase
-      .channel('chat-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'chats',
-          filter: `coach_type=eq.${coachType}`
-        },
-        () => {
-          loadChats();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [coachType]);
 
   const loadChats = async () => {
