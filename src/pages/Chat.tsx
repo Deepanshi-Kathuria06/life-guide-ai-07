@@ -61,6 +61,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unsavedMessages, setUnsavedMessages] = useState<{role: string, content: string}[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const coach = coachType ? coachInfo[coachType] : null;
@@ -73,6 +74,44 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-save messages when leaving the page
+  useEffect(() => {
+    const saveMessages = async () => {
+      if (unsavedMessages.length > 0 && chatId) {
+        const messagesToSave = unsavedMessages.map(msg => ({
+          chat_id: chatId,
+          role: msg.role,
+          content: msg.content,
+        }));
+        await supabase.from("messages").insert(messagesToSave);
+        // Update chat timestamp
+        await supabase.from("chats").update({ updated_at: new Date().toISOString() }).eq("id", chatId);
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      if (unsavedMessages.length > 0 && chatId) {
+        // Use sendBeacon for reliable saving on page close
+        const messagesToSave = unsavedMessages.map(msg => ({
+          chat_id: chatId,
+          role: msg.role,
+          content: msg.content,
+        }));
+        navigator.sendBeacon(
+          `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/messages`,
+          JSON.stringify(messagesToSave)
+        );
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      saveMessages(); // Save when component unmounts (navigation)
+    };
+  }, [unsavedMessages, chatId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -196,6 +235,7 @@ export default function Chat() {
     setInput("");
     setLoading(true);
 
+    // Add user message to UI instantly
     const tempUserMsg: Message = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -203,24 +243,9 @@ export default function Chat() {
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, tempUserMsg]);
-
-    const { error: userMsgError } = await supabase
-      .from("messages")
-      .insert({
-        chat_id: chatId,
-        role: "user",
-        content: userMessage,
-      });
-
-    if (userMsgError) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save message",
-      });
-      setLoading(false);
-      return;
-    }
+    
+    // Queue for batch save later
+    setUnsavedMessages((prev) => [...prev, { role: "user", content: userMessage }]);
 
     const tempAiMsgId = `temp-ai-${Date.now()}`;
     const tempAiMsg: Message = {
@@ -304,12 +329,9 @@ export default function Chat() {
         }
       }
 
+      // Queue AI response for batch save
       if (aiResponseContent) {
-        await supabase.from("messages").insert({
-          chat_id: chatId,
-          role: "assistant",
-          content: aiResponseContent,
-        });
+        setUnsavedMessages((prev) => [...prev, { role: "assistant", content: aiResponseContent }]);
       }
     } catch (error) {
       console.error("Chat error:", error);
@@ -319,6 +341,8 @@ export default function Chat() {
         description: error instanceof Error ? error.message : "Failed to get AI response",
       });
       setMessages((prev) => prev.filter((m) => m.id !== tempAiMsgId));
+      // Remove user message from unsaved queue on error
+      setUnsavedMessages((prev) => prev.slice(0, -1));
     }
 
     setLoading(false);
