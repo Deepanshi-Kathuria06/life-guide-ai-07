@@ -32,21 +32,21 @@ export default function CoachCard({ type, name, description }: CoachCardProps) {
 
   return (
     <Card 
-      className="relative p-8 glass-morphism hover-lift transition-all duration-300 border-2 group overflow-hidden flex flex-col"
+      className="relative p-5 sm:p-6 md:p-8 glass-morphism hover-lift transition-all duration-300 border-2 group overflow-hidden flex flex-col"
       style={{
         borderImage: `linear-gradient(135deg, hsl(var(--coach-${type})), transparent) 1`,
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="relative z-10 flex flex-col flex-grow">
-        <div className="text-5xl mb-4 animate-float">{emoji}</div>
-        <h3 className="text-xl font-semibold mb-3" style={{ color: `hsl(var(--coach-${type}))` }}>
+        <div className="text-4xl sm:text-5xl mb-3 sm:mb-4 animate-float">{emoji}</div>
+        <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3" style={{ color: `hsl(var(--coach-${type}))` }}>
           {name}
         </h3>
-        <p className="text-muted-foreground mb-6 flex-grow">{description}</p>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 flex-grow line-clamp-2 sm:line-clamp-none">{description}</p>
         <Button
           onClick={() => navigate(`/chat/${type}`)}
-          className="w-full"
+          className="w-full text-sm sm:text-base"
           variant="outline"
           style={{ 
             borderColor: `hsl(var(--coach-${type}))`,
