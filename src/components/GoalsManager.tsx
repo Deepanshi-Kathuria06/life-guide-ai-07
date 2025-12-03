@@ -27,26 +27,6 @@ export default function GoalsManager({ coachType, chatId }: GoalsManagerProps) {
   useEffect(() => {
     if (chatId) {
       loadGoals();
-
-      // Real-time updates
-      const channel = supabase
-        .channel('goals-updates')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'habits'
-          },
-          () => {
-            loadGoals();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
   }, [coachType, chatId]);
 
