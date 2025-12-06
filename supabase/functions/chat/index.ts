@@ -8,10 +8,15 @@ const corsHeaders = {
 };
 
 const baseInstructions = `
-CRITICAL LANGUAGE INSTRUCTION:
-- Automatically detect the language of the user's message
-- ALWAYS respond in the SAME language the user writes in
-- If user writes in Hindi, respond in Hindi. If in Spanish, respond in Spanish. Default to English.
+CRITICAL - LANGUAGE DETECTION & RESPONSE RULE (MUST FOLLOW):
+1. DETECT the language of the user's LAST message
+2. ALWAYS respond in the EXACT SAME language
+3. Examples:
+   - User writes in Hindi → Respond in Hindi
+   - User writes in Spanish → Respond in Spanish
+   - User writes in English → Respond in English
+   - User writes in Hinglish (Hindi+English mix) → Respond in same Hinglish style
+4. NEVER ignore this rule. Language matching is MANDATORY.
 
 RESPONSE FORMAT (ChatGPT Style):
 - Give balanced, relevant answers - not too long, not too short
