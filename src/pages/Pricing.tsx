@@ -1,154 +1,55 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-
-const plans = [
-  {
-    name: "Free Trial",
-    price: "$0",
-    period: "7 days",
-    features: [
-      "Access to all AI coaches",
-      "Unlimited conversations",
-      "Message history saved",
-      "No credit card required",
-    ],
-    cta: "Start Free Trial",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: "$29",
-    period: "per month",
-    features: [
-      "Everything in Free Trial",
-      "Unlimited access to all coaches",
-      "Priority AI responses",
-      "Advanced analytics",
-      "Email support",
-    ],
-    cta: "Get Started",
-    popular: true,
-  },
-  {
-    name: "Enterprise",
-    price: "$99",
-    period: "per month",
-    features: [
-      "Everything in Pro",
-      "Custom AI coaching models",
-      "Team collaboration features",
-      "Dedicated account manager",
-      "24/7 priority support",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-  },
-];
+import { ArrowLeft, ExternalLink } from "lucide-react";
 
 export default function Pricing() {
   const navigate = useNavigate();
-
-  const handleSelectPlan = async (planName: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    if (planName === "Free Trial") {
-      navigate("/dashboard");
-      return;
-    }
-
-    toast({
-      title: "Coming Soon",
-      description: "Stripe integration will be available soon!",
-    });
-  };
+  const superProfileUrl = "https://superprofile.bio/vp/691cb5ad29cccd001342a60b";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              AICOACHLY
-            </h1>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="hover:bg-primary/10"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                AICOACHLY
+              </h1>
+            </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/auth")}>
-              Log In
-            </Button>
-            <Button variant="gradient" onClick={() => navigate("/auth")}>
-              Get Started
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open(superProfileUrl, '_blank')}
+              className="gap-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span className="hidden sm:inline">Open in New Tab</span>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Pricing Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-4">
-            Simple, <span className="bg-gradient-primary bg-clip-text text-transparent">Transparent</span> Pricing
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            Start free, upgrade when you're ready
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`p-8 relative bg-card/50 backdrop-blur-sm ${
-                plan.popular
-                  ? "border-primary border-2 shadow-lg"
-                  : "border-border border-2"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-primary px-4 py-1 rounded-full text-sm font-semibold text-white">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-              
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">/{plan.period}</span>
-                </div>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                className="w-full"
-                variant={plan.popular ? "gradient" : "outline"}
-                onClick={() => handleSelectPlan(plan.name)}
-              >
-                {plan.cta}
-              </Button>
-            </Card>
-          ))}
-        </div>
-      </section>
+      {/* Embedded SuperProfile Payment Page */}
+      <div className="flex-1 w-full">
+        <iframe
+          src={superProfileUrl}
+          title="AICOACHLY Payment"
+          className="w-full h-full min-h-[calc(100vh-73px)] border-0"
+          allow="payment"
+          loading="lazy"
+        />
+      </div>
     </div>
   );
 }
