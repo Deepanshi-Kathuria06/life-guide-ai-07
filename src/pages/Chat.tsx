@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -396,8 +396,8 @@ export default function Chat() {
     });
   };
 
-  // Sidebar content component
-  const SidebarContent = () => (
+  // Memoize sidebar content to prevent re-renders when typing
+  const sidebarContent = useMemo(() => (
     <div className="p-4 space-y-4">
       <GoalsManager coachType={coachType || ''} chatId={chatId} />
       <ProgressTracker chatId={chatId} coachType={coachType || ''} />
@@ -408,7 +408,7 @@ export default function Chat() {
         onNewChat={handleNewChat}
       />
     </div>
-  );
+  ), [coachType, chatId]);
 
   if (subscriptionLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
@@ -437,7 +437,7 @@ export default function Chat() {
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0">
                 <ScrollArea className="h-full">
-                  <SidebarContent />
+                  {sidebarContent}
                 </ScrollArea>
               </SheetContent>
             </Sheet>
@@ -467,7 +467,7 @@ export default function Chat() {
         {/* Desktop Sidebar - hidden on mobile */}
         <aside className="hidden lg:block w-80 border-r border-border flex-shrink-0">
           <ScrollArea className="h-full">
-            <SidebarContent />
+            {sidebarContent}
           </ScrollArea>
         </aside>
 
