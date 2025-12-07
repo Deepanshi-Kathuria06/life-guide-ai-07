@@ -123,21 +123,22 @@ export default function GoalsManager({ coachType, chatId }: GoalsManagerProps) {
   };
 
   return (
-    <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20">
-      <div className="flex items-center gap-2 mb-4">
-        <Target className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">Goals & Targets</h3>
+    <Card className="p-4 sm:p-6 bg-card/50 backdrop-blur-sm border-primary/20">
+      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+        <h3 className="text-base sm:text-lg font-semibold">Goals & Targets</h3>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-3 sm:mb-4">
         <Input
           value={newGoal}
           onChange={(e) => setNewGoal(e.target.value)}
           placeholder="Add a new goal..."
           onKeyPress={(e) => e.key === "Enter" && addGoal()}
           disabled={addingGoal}
+          className="text-sm sm:text-base"
         />
-        <Button onClick={addGoal} disabled={addingGoal || !newGoal.trim()} size="icon">
+        <Button onClick={addGoal} disabled={addingGoal || !newGoal.trim()} size="icon" className="flex-shrink-0">
           {addingGoal ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -147,30 +148,30 @@ export default function GoalsManager({ coachType, chatId }: GoalsManagerProps) {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div className="flex justify-center py-6 sm:py-8">
+          <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
         </div>
       ) : goals.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-[200px] sm:max-h-[300px] overflow-y-auto">
           {goals.map((goal) => (
             <div
               key={goal.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-background/50 hover:bg-background/70 transition-colors cursor-pointer"
+              className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 hover:bg-background/70 transition-colors cursor-pointer"
               onClick={() => toggleGoal(goal.id, goal.completed)}
             >
               {goal.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0" />
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 flex-shrink-0" />
               ) : (
-                <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
               )}
-              <span className={goal.completed ? "line-through text-muted-foreground" : ""}>
+              <span className={`text-sm sm:text-base ${goal.completed ? "line-through text-muted-foreground" : ""}`}>
                 {goal.title}
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm text-center py-8">
+        <p className="text-muted-foreground text-xs sm:text-sm text-center py-6 sm:py-8">
           No goals yet. Add your first goal above!
         </p>
       )}

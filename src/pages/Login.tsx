@@ -43,17 +43,17 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
             Welcome Back
           </h1>
-          <p className="text-muted-foreground">Log in to continue your journey</p>
+          <p className="text-sm sm:text-base text-muted-foreground">Log in to continue your journey</p>
         </div>
 
-        <Card className="p-8 bg-card/50 backdrop-blur-sm border-2">
-          <form onSubmit={handleLogin} className="space-y-6">
+        <Card className="p-5 sm:p-8 bg-card/50 backdrop-blur-sm border-2">
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -61,11 +61,12 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="text-sm sm:text-base"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -73,18 +74,19 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="text-sm sm:text-base"
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading} variant="gradient">
+            <Button type="submit" className="w-full text-sm sm:text-base" disabled={loading} variant="gradient">
               {loading ? "Logging in..." : "Log In"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Button variant="link" className="p-0 text-primary" onClick={() => navigate("/auth")}>
+              <Button variant="link" className="p-0 text-primary text-xs sm:text-sm" onClick={() => navigate("/auth")}>
                 Sign up
               </Button>
             </p>
@@ -92,7 +94,7 @@ export default function Login() {
         </Card>
 
         <div className="mt-4 text-center">
-          <Button variant="link" onClick={() => navigate("/")} className="text-muted-foreground">
+          <Button variant="link" onClick={() => navigate("/")} className="text-muted-foreground text-xs sm:text-sm">
             ← Back to home
           </Button>
         </div>
