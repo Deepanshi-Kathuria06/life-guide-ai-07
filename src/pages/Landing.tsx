@@ -185,64 +185,92 @@ export default function Landing() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-12 sm:py-20 md:py-32 text-center relative overflow-hidden">
+      <section className="container mx-auto px-4 py-8 sm:py-12 md:py-16 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-50" />
-        <div className="absolute top-20 left-10 w-48 sm:w-72 h-48 sm:h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-10 left-10 w-32 sm:w-72 h-32 sm:h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-10 w-40 sm:w-96 h-40 sm:h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         
-        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 relative">
-          <div className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-2 sm:mb-4">
-            <span className="text-xs sm:text-sm font-medium text-primary">🚀 Powered by Advanced AI Technology</span>
+        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative">
+          <div className="inline-block px-3 sm:px-4 py-1 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+            <span className="text-xs sm:text-sm font-medium text-primary">🚀 Powered by Advanced AI</span>
           </div>
           
-          <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI-Powered</span>
-            <br />
-            Life Coach for Success
+            <br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>Life Coach
           </h2>
           
-          <p className="text-base sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto px-2">
-            Get personalized guidance from specialized AI coaches in fitness, career, mindfulness, finance, and relationships. Available 24/7.
+          <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
+            Get personalized guidance from 5 specialized AI coaches. Available 24/7.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4 px-4">
-            <Button size="lg" variant="gradient" onClick={() => navigate("/auth")} className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
-              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center pt-2 px-4">
+            <Button size="default" variant="gradient" onClick={() => navigate("/auth")} className="text-sm sm:text-lg px-4 sm:px-8 w-full sm:w-auto">
+              <Sparkles className="h-4 w-4 mr-2" />
               Start Free Trial
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/pricing")} className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
+            <Button size="default" variant="outline" onClick={() => navigate("/pricing")} className="text-sm sm:text-lg px-4 sm:px-8 w-full sm:w-auto">
               View Pricing
             </Button>
           </div>
           
-          <div className="pt-6 sm:pt-8">
-            <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">Trusted by thousands of professionals</p>
+          <div className="pt-2 sm:pt-4">
             <div className="flex items-center justify-center gap-1 flex-wrap">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 fill-primary text-primary" />
+                <Star key={i} className="h-3 w-3 sm:h-5 sm:w-5 fill-primary text-primary" />
               ))}
               <span className="ml-2 text-xs sm:text-sm font-semibold">4.9/5 from 2,500+ reviews</span>
             </div>
           </div>
         </div>
-        
-        <button 
-          onClick={() => document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block"
-        >
-          <ChevronDown className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
-        </button>
+      </section>
+
+      {/* Coaches Grid - Featured prominently */}
+      <section id="features" className="container mx-auto px-4 py-6 sm:py-12 md:py-16">
+        <div className="text-center mb-4 sm:mb-8 px-2">
+          <h3 className="text-xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">
+            Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI Coach</span>
+          </h3>
+          <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            Each coach is specialized in their domain to provide expert guidance
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 max-w-6xl mx-auto">
+          {coaches.map((coach) => {
+            const Icon = coach.icon;
+            return (
+              <Card
+                key={coach.name}
+                className="relative p-3 sm:p-4 md:p-6 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden hover:scale-[1.02] cursor-pointer"
+                style={{
+                  borderImage: `linear-gradient(135deg, hsl(var(--${coach.color})), transparent) 1`,
+                }}
+                onClick={() => navigate("/auth")}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10 text-center">
+                  <div className="text-2xl sm:text-3xl md:text-4xl mb-2 animate-float">{coach.icon === Dumbbell ? "💪" : coach.icon === Briefcase ? "💼" : coach.icon === Brain ? "🧠" : coach.icon === DollarSign ? "💰" : "❤️"}</div>
+                  <h4 className="text-xs sm:text-sm md:text-base font-semibold" style={{ color: `hsl(var(--${coach.color}))` }}>
+                    {coach.name.replace(" Coach", "")}
+                  </h4>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block line-clamp-2">{coach.description}</p>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
       </section>
 
       {/* Stats Section */}
-      <section id="stats" className="container mx-auto px-4 py-10 sm:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 max-w-5xl mx-auto">
+      <section id="stats" className="container mx-auto px-4 py-6 sm:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-8 max-w-5xl mx-auto">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center p-3 sm:p-0">
-              <div className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1 sm:mb-2">
+            <div key={index} className="text-center p-2 sm:p-0">
+              <div className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
                 {stat.value}
               </div>
-              <div className="text-xs sm:text-base text-muted-foreground">{stat.label}</div>
+              <div className="text-[10px] sm:text-sm text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -292,52 +320,6 @@ export default function Landing() {
               <p className="text-sm sm:text-base text-muted-foreground">Follow personalized action plans and track your progress</p>
             </div>
           </Card>
-        </div>
-      </section>
-
-      {/* Coaches Grid */}
-      <section id="features" className="container mx-auto px-4 py-12 sm:py-16 md:py-20 bg-gradient-to-b from-transparent to-card/20">
-        <div className="text-center mb-8 sm:mb-12 md:mb-16 px-2">
-          <h3 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
-            Meet Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI Coaches</span>
-          </h3>
-          <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Each coach is specialized in their domain to provide expert guidance
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
-          {coaches.map((coach) => {
-            const Icon = coach.icon;
-            return (
-              <Card
-                key={coach.name}
-                className="relative p-5 sm:p-6 md:p-8 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden hover:scale-[1.02] sm:hover:scale-105"
-                style={{
-                  borderImage: `linear-gradient(135deg, hsl(var(--${coach.color})), transparent) 1`,
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative z-10">
-                  <div className="text-4xl sm:text-5xl mb-3 sm:mb-4 animate-float">{coach.icon === Dumbbell ? "💪" : coach.icon === Briefcase ? "💼" : coach.icon === Brain ? "🧠" : coach.icon === DollarSign ? "💰" : "❤️"}</div>
-                  <h4 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3" style={{ color: `hsl(var(--${coach.color}))` }}>
-                    {coach.name}
-                  </h4>
-                  <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">{coach.description}</p>
-                  <Button 
-                    className="w-full text-sm sm:text-base" 
-                    variant="outline"
-                    style={{ 
-                      borderColor: `hsl(var(--${coach.color}))`,
-                      color: `hsl(var(--${coach.color}))`
-                    }}
-                    onClick={() => navigate("/auth")}
-                  >
-                    Start Chatting
-                  </Button>
-                </div>
-              </Card>
-            );
-          })}
         </div>
       </section>
 
