@@ -137,6 +137,8 @@ export default function GoalsManager({ coachType, chatId }: GoalsManagerProps) {
           onKeyPress={(e) => e.key === "Enter" && addGoal()}
           disabled={addingGoal}
           className="text-sm sm:text-base"
+          autoFocus={false}
+          autoComplete="off"
         />
         <Button onClick={addGoal} disabled={addingGoal || !newGoal.trim()} size="icon" className="flex-shrink-0">
           {addingGoal ? (
