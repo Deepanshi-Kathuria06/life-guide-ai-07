@@ -54,38 +54,38 @@ export default function ChatHistory({ coachType, currentChatId, onChatSelect, on
   };
 
   return (
-    <Card className="p-4 bg-card/50 backdrop-blur-sm border-primary/20">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Chat History</h3>
-        <Button onClick={onNewChat} size="sm" variant="outline">
-          <Plus className="h-4 w-4 mr-2" />
-          New Chat
+    <Card className="p-3 sm:p-4 bg-card/50 backdrop-blur-sm border-primary/20">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg font-semibold">Chat History</h3>
+        <Button onClick={onNewChat} size="sm" variant="outline" className="text-xs sm:text-sm">
+          <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          New
         </Button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div className="flex justify-center py-6 sm:py-8">
+          <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
         </div>
       ) : chats.length === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-8">
+        <p className="text-muted-foreground text-xs sm:text-sm text-center py-6 sm:py-8">
           No chat history yet. Start a new conversation!
         </p>
       ) : (
-        <div className="space-y-2 max-h-[500px] overflow-y-auto">
+        <div className="space-y-2 max-h-[200px] sm:max-h-[500px] overflow-y-auto">
           {chats.map((chat) => (
             <button
               key={chat.id}
               onClick={() => onChatSelect(chat.id)}
-              className={`w-full text-left p-3 rounded-lg transition-all hover:bg-primary/10 ${
+              className={`w-full text-left p-2 sm:p-3 rounded-lg transition-all hover:bg-primary/10 ${
                 currentChatId === chat.id ? "bg-primary/20 border border-primary/40" : "bg-background/30"
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <MessageSquare className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium truncate">{chat.title}</span>
+                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-medium truncate">{chat.title}</span>
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] sm:text-xs text-muted-foreground">
                 {new Date(chat.updated_at).toLocaleDateString()}
               </span>
             </button>

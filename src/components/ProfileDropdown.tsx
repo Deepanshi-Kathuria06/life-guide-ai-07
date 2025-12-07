@@ -80,31 +80,31 @@ export function ProfileDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Avatar className="h-10 w-10 cursor-pointer border-2 border-primary/20">
-            <AvatarFallback className="bg-gradient-primary text-white">
+          <Avatar className="h-8 w-8 sm:h-10 sm:w-10 cursor-pointer border-2 border-primary/20">
+            <AvatarFallback className="bg-gradient-primary text-white text-sm sm:text-base">
               {getInitials()}
             </AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent align="end" className="w-64 sm:w-72">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">My Account</p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-muted-foreground truncate max-w-[200px] sm:max-w-[240px]">
               {profile?.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        <div className="px-2 py-3 space-y-3">
+        <div className="px-2 py-2 sm:py-3 space-y-2 sm:space-y-3">
           {/* Subscription Status */}
-          <div className="flex items-center gap-3 text-sm">
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <p className="font-medium">Subscription</p>
-              <p className="text-xs text-muted-foreground capitalize">
+          <div className="flex items-center gap-2 sm:gap-3 text-sm">
+            <CreditCard className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-xs sm:text-sm">Subscription</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground capitalize">
                 {profile?.subscription_status || "Free"}
               </p>
             </div>
@@ -112,11 +112,11 @@ export function ProfileDropdown() {
 
           {/* Days Remaining */}
           {profile?.subscription_status === "trial" && (
-            <div className="flex items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p className="font-medium">Trial Days Left</p>
-                <p className="text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 sm:gap-3 text-sm">
+              <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-xs sm:text-sm">Trial Days Left</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">
                   {getDaysRemaining()} days remaining
                 </p>
               </div>
@@ -124,11 +124,11 @@ export function ProfileDropdown() {
           )}
 
           {/* Chat Count */}
-          <div className="flex items-center gap-3 text-sm">
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <p className="font-medium">Total Chats</p>
-              <p className="text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 sm:gap-3 text-sm">
+            <MessageSquare className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-xs sm:text-sm">Total Chats</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
                 {chatCount} conversations
               </p>
             </div>
@@ -137,12 +137,12 @@ export function ProfileDropdown() {
 
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={() => navigate("/pricing")}>
+        <DropdownMenuItem onClick={() => navigate("/pricing")} className="text-xs sm:text-sm">
           <CreditCard className="mr-2 h-4 w-4" />
           <span>Manage Subscription</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+        <DropdownMenuItem onClick={handleLogout} className="text-destructive text-xs sm:text-sm">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

@@ -98,14 +98,14 @@ export default function ProgressTracker({ chatId, coachType }: ProgressTrackerPr
   ];
 
   return (
-    <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20">
-      <h3 className="text-lg font-semibold mb-4">Your Progress</h3>
-      <div className="grid grid-cols-3 gap-4">
+    <Card className="p-4 sm:p-6 bg-card/50 backdrop-blur-sm border-primary/20">
+      <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Your Progress</h3>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {stats.map((stat, idx) => (
           <div key={idx} className="text-center">
-            <stat.icon className={`h-6 w-6 mx-auto mb-2 ${stat.color}`} />
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <div className="text-xs text-muted-foreground">{stat.label}</div>
+            <stat.icon className={`h-4 w-4 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 ${stat.color}`} />
+            <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">{stat.label}</div>
           </div>
         ))}
       </div>
