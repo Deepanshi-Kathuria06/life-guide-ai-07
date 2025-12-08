@@ -112,23 +112,23 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-2 sm:py-3 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <h1 className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               AICOACHLY
             </h1>
           </div>
           
           {/* Desktop Nav */}
-          <nav className="hidden md:flex gap-6 items-center">
+          <nav className="hidden md:flex gap-4 items-center">
             {navItems.map((item) => (
               <button 
                 key={item.label}
                 onClick={item.action} 
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {item.label}
               </button>
@@ -136,11 +136,11 @@ export default function Landing() {
           </nav>
           
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/auth")}>
+          <div className="hidden md:flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
               Log In
             </Button>
-            <Button variant="gradient" onClick={() => navigate("/auth")}>
+            <Button variant="gradient" size="sm" onClick={() => navigate("/auth")}>
               Get Started
             </Button>
           </div>
@@ -184,93 +184,74 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-8 sm:py-12 md:py-16 text-center relative overflow-hidden">
+      {/* Hero + Coaches Section - Fits in viewport */}
+      <section className="flex-1 flex flex-col justify-center container mx-auto px-4 py-4 sm:py-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-50" />
-        <div className="absolute top-10 left-10 w-32 sm:w-72 h-32 sm:h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-40 sm:w-96 h-40 sm:h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-5 left-5 w-24 sm:w-48 h-24 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-5 right-5 w-32 sm:w-64 h-32 sm:h-64 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         
-        <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative">
-          <div className="inline-block px-3 sm:px-4 py-1 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
-            <span className="text-xs sm:text-sm font-medium text-primary">🚀 Powered by Advanced AI</span>
+        {/* Hero Content */}
+        <div className="max-w-4xl mx-auto text-center space-y-2 sm:space-y-3 relative mb-4 sm:mb-6">
+          <div className="inline-block px-2 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <span className="text-[10px] sm:text-xs font-medium text-primary">🚀 Powered by Advanced AI</span>
           </div>
           
-          <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI-Powered</span>
-            <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>Life Coach
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+            Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI-Powered</span> Life Coach
           </h2>
           
-          <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
             Get personalized guidance from 5 specialized AI coaches. Available 24/7.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center pt-2 px-4">
-            <Button size="default" variant="gradient" onClick={() => navigate("/auth")} className="text-sm sm:text-lg px-4 sm:px-8 w-full sm:w-auto">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Start Free Trial
+          <div className="flex flex-row gap-2 justify-center pt-1">
+            <Button size="sm" variant="gradient" onClick={() => navigate("/auth")} className="text-xs sm:text-sm px-3 sm:px-6">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Start Free
             </Button>
-            <Button size="default" variant="outline" onClick={() => navigate("/pricing")} className="text-sm sm:text-lg px-4 sm:px-8 w-full sm:w-auto">
+            <Button size="sm" variant="outline" onClick={() => navigate("/pricing")} className="text-xs sm:text-sm px-3 sm:px-6">
               View Pricing
             </Button>
           </div>
-          
-          <div className="pt-2 sm:pt-4">
-            <div className="flex items-center justify-center gap-1 flex-wrap">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-3 w-3 sm:h-5 sm:w-5 fill-primary text-primary" />
-              ))}
-              <span className="ml-2 text-xs sm:text-sm font-semibold">4.9/5 from 2,500+ reviews</span>
-            </div>
-          </div>
         </div>
-      </section>
 
-      {/* Coaches Grid - Featured prominently */}
-      <section id="features" className="container mx-auto px-4 py-6 sm:py-12 md:py-16">
-        <div className="text-center mb-4 sm:mb-8 px-2">
-          <h3 className="text-xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3">
-            Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI Coach</span>
+        {/* Coaches Grid */}
+        <div className="relative">
+          <h3 className="text-center text-sm sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
+            Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">Coach</span>
           </h3>
-          <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Each coach is specialized in their domain to provide expert guidance
-          </p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 max-w-6xl mx-auto">
-          {coaches.map((coach) => {
-            const Icon = coach.icon;
-            return (
+          <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
+            {coaches.map((coach) => (
               <Card
                 key={coach.name}
-                className="relative p-3 sm:p-4 md:p-6 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden hover:scale-[1.02] cursor-pointer"
+                className="relative p-2 sm:p-3 md:p-4 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border group overflow-hidden hover:scale-[1.02] cursor-pointer"
                 style={{
-                  borderImage: `linear-gradient(135deg, hsl(var(--${coach.color})), transparent) 1`,
+                  borderColor: `hsl(var(--${coach.color}) / 0.3)`,
                 }}
                 onClick={() => navigate("/auth")}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10 text-center">
-                  <div className="text-2xl sm:text-3xl md:text-4xl mb-2 animate-float">{coach.icon === Dumbbell ? "💪" : coach.icon === Briefcase ? "💼" : coach.icon === Brain ? "🧠" : coach.icon === DollarSign ? "💰" : "❤️"}</div>
-                  <h4 className="text-xs sm:text-sm md:text-base font-semibold" style={{ color: `hsl(var(--${coach.color}))` }}>
+                  <div className="text-xl sm:text-2xl md:text-3xl mb-1 animate-float">
+                    {coach.icon === Dumbbell ? "💪" : coach.icon === Briefcase ? "💼" : coach.icon === Brain ? "🧠" : coach.icon === DollarSign ? "💰" : "❤️"}
+                  </div>
+                  <h4 className="text-[9px] sm:text-xs md:text-sm font-medium" style={{ color: `hsl(var(--${coach.color}))` }}>
                     {coach.name.replace(" Coach", "")}
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block line-clamp-2">{coach.description}</p>
                 </div>
               </Card>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </section>
 
-      {/* Stats Section */}
-      <section id="stats" className="container mx-auto px-4 py-6 sm:py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-8 max-w-5xl mx-auto">
+        {/* Stats Row */}
+        <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-3xl mx-auto mt-4 sm:mt-6">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center p-2 sm:p-0">
-              <div className="text-xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+            <div key={index} className="text-center">
+              <div className="text-sm sm:text-lg md:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 {stat.value}
               </div>
-              <div className="text-[10px] sm:text-sm text-muted-foreground">{stat.label}</div>
+              <div className="text-[8px] sm:text-xs text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>
