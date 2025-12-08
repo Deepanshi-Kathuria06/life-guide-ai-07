@@ -112,12 +112,12 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-2 sm:py-3 flex justify-between items-center">
+      <header className="border-b border-border/50 bg-background/80 backdrop-blur-md z-50 shrink-0">
+        <div className="container mx-auto px-3 sm:px-4 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <h1 className="text-base sm:text-lg md:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               AICOACHLY
             </h1>
           </div>
@@ -148,33 +148,33 @@ export default function Landing() {
           {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 p-0">
+            <SheetContent side="right" className="w-64 p-0">
               <div className="flex flex-col h-full">
-                <div className="p-4 border-b border-border">
-                  <h2 className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
+                <div className="p-3 border-b border-border">
+                  <h2 className="text-base font-bold bg-gradient-primary bg-clip-text text-transparent">
                     AICOACHLY
                   </h2>
                 </div>
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 p-3 space-y-1">
                   {navItems.map((item) => (
                     <button
                       key={item.label}
                       onClick={() => { item.action(); setMobileMenuOpen(false); }}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-muted transition-colors text-foreground"
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground"
                     >
                       {item.label}
                     </button>
                   ))}
                 </nav>
-                <div className="p-4 border-t border-border space-y-2">
-                  <Button variant="outline" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
+                <div className="p-3 border-t border-border space-y-2">
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
                     Log In
                   </Button>
-                  <Button variant="gradient" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
+                  <Button variant="gradient" size="sm" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
                     Get Started
                   </Button>
                 </div>
@@ -184,32 +184,32 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero + Coaches Section - Fits in viewport */}
-      <section className="flex-1 flex flex-col justify-center container mx-auto px-4 py-4 sm:py-6 relative overflow-hidden">
+      {/* Main Content - Single Screen */}
+      <main className="flex-1 flex flex-col justify-center container mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-50" />
-        <div className="absolute top-5 left-5 w-24 sm:w-48 h-24 sm:h-48 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-5 right-5 w-32 sm:w-64 h-32 sm:h-64 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-5 left-5 w-20 sm:w-32 md:w-48 h-20 sm:h-32 md:h-48 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-5 right-5 w-24 sm:w-40 md:w-64 h-24 sm:h-40 md:h-64 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         
         {/* Hero Content */}
-        <div className="max-w-4xl mx-auto text-center space-y-2 sm:space-y-3 relative mb-4 sm:mb-6">
-          <div className="inline-block px-2 py-1 rounded-full bg-primary/10 border border-primary/20">
-            <span className="text-[10px] sm:text-xs font-medium text-primary">🚀 Powered by Advanced AI</span>
+        <div className="max-w-4xl mx-auto text-center space-y-1.5 sm:space-y-2 md:space-y-3 relative mb-3 sm:mb-4 md:mb-6">
+          <div className="inline-block px-2 py-0.5 sm:py-1 rounded-full bg-primary/10 border border-primary/20">
+            <span className="text-[9px] sm:text-[10px] md:text-xs font-medium text-primary">🚀 Powered by Advanced AI</span>
           </div>
           
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+          <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
             Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI-Powered</span> Life Coach
           </h2>
           
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+          <p className="text-[11px] sm:text-xs md:text-sm lg:text-base text-muted-foreground max-w-xl mx-auto">
             Get personalized guidance from 5 specialized AI coaches. Available 24/7.
           </p>
           
           <div className="flex flex-row gap-2 justify-center pt-1">
-            <Button size="sm" variant="gradient" onClick={() => navigate("/auth")} className="text-xs sm:text-sm px-3 sm:px-6">
+            <Button size="sm" variant="gradient" onClick={() => navigate("/auth")} className="text-[10px] sm:text-xs md:text-sm px-2.5 sm:px-4 md:px-6 h-7 sm:h-8 md:h-9">
               <Sparkles className="h-3 w-3 mr-1" />
               Start Free
             </Button>
-            <Button size="sm" variant="outline" onClick={() => navigate("/pricing")} className="text-xs sm:text-sm px-3 sm:px-6">
+            <Button size="sm" variant="outline" onClick={() => navigate("/pricing")} className="text-[10px] sm:text-xs md:text-sm px-2.5 sm:px-4 md:px-6 h-7 sm:h-8 md:h-9">
               View Pricing
             </Button>
           </div>
@@ -217,14 +217,14 @@ export default function Landing() {
 
         {/* Coaches Grid */}
         <div className="relative">
-          <h3 className="text-center text-sm sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
+          <h3 className="text-center text-xs sm:text-sm md:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">
             Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">Coach</span>
           </h3>
-          <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
+          <div className="grid grid-cols-5 gap-1.5 sm:gap-2 md:gap-3 max-w-3xl mx-auto">
             {coaches.map((coach) => (
               <Card
                 key={coach.name}
-                className="relative p-2 sm:p-3 md:p-4 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border group overflow-hidden hover:scale-[1.02] cursor-pointer"
+                className="relative p-1.5 sm:p-2 md:p-3 lg:p-4 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border group overflow-hidden hover:scale-[1.02] cursor-pointer"
                 style={{
                   borderColor: `hsl(var(--${coach.color}) / 0.3)`,
                 }}
@@ -232,10 +232,10 @@ export default function Landing() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10 text-center">
-                  <div className="text-xl sm:text-2xl md:text-3xl mb-1 animate-float">
+                  <div className="text-base sm:text-lg md:text-2xl lg:text-3xl mb-0.5 sm:mb-1 animate-float">
                     {coach.icon === Dumbbell ? "💪" : coach.icon === Briefcase ? "💼" : coach.icon === Brain ? "🧠" : coach.icon === DollarSign ? "💰" : "❤️"}
                   </div>
-                  <h4 className="text-[9px] sm:text-xs md:text-sm font-medium" style={{ color: `hsl(var(--${coach.color}))` }}>
+                  <h4 className="text-[8px] sm:text-[9px] md:text-xs lg:text-sm font-medium leading-tight" style={{ color: `hsl(var(--${coach.color}))` }}>
                     {coach.name.replace(" Coach", "")}
                   </h4>
                 </div>
@@ -245,17 +245,17 @@ export default function Landing() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-3xl mx-auto mt-4 sm:mt-6">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 md:gap-4 max-w-2xl mx-auto mt-3 sm:mt-4 md:mt-6">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-sm sm:text-lg md:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <div className="text-xs sm:text-sm md:text-lg lg:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 {stat.value}
               </div>
-              <div className="text-[8px] sm:text-xs text-muted-foreground">{stat.label}</div>
+              <div className="text-[7px] sm:text-[8px] md:text-xs text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>
-      </section>
+      </main>
 
       {/* How It Works */}
       <section className="container mx-auto px-4 py-12 sm:py-16 md:py-20">
