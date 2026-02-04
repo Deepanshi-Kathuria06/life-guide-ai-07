@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.analyze-mood]
 verify_jwt = false
+
+[functions.extract-tasks]
+verify_jwt = false
