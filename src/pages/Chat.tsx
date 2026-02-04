@@ -4,16 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Sparkles, ArrowLeft, Send, Trash2, Menu } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -71,9 +61,6 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [unsavedMessages, setUnsavedMessages] = useState<{role: string, content: string}[]>([]);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const coach = coachType ? coachInfo[coachType] : null;
@@ -86,56 +73,6 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  // Handle browser close/refresh - show native prompt
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (unsavedMessages.length > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [unsavedMessages]);
-
-  const handleNavigateAway = (path: string) => {
-    if (unsavedMessages.length > 0) {
-      setPendingNavigation(path);
-      setShowSaveDialog(true);
-    } else {
-      navigate(path);
-    }
-  };
-
-  const saveAndNavigate = async () => {
-    if (unsavedMessages.length > 0 && chatId) {
-      const messagesToSave = unsavedMessages.map(msg => ({
-        chat_id: chatId,
-        role: msg.role,
-        content: msg.content,
-      }));
-      await supabase.from("messages").insert(messagesToSave);
-      await supabase.from("chats").update({ updated_at: new Date().toISOString() }).eq("id", chatId);
-      toast({ title: "Chat saved", description: "Your conversation has been saved." });
-    }
-    setUnsavedMessages([]);
-    setShowSaveDialog(false);
-    if (pendingNavigation) {
-      navigate(pendingNavigation);
-    }
-  };
-
-  const discardAndNavigate = async () => {
-    // Don't save - just clear unsaved messages
-    setUnsavedMessages([]);
-    setShowSaveDialog(false);
-    toast({ title: "Chat discarded", description: "Your conversation was not saved." });
-    if (pendingNavigation) {
-      navigate(pendingNavigation);
-    }
-  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -267,9 +204,26 @@ export default function Chat() {
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, tempUserMsg]);
-    
-    // Queue for batch save later
-    setUnsavedMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+
+    // Save user message immediately to database for memory
+    const { data: savedUserMsg } = await supabase
+      .from("messages")
+      .insert({
+        chat_id: chatId,
+        role: "user",
+        content: userMessage,
+      })
+      .select()
+      .single();
+
+    // Update the temp message with real ID
+    if (savedUserMsg) {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempUserMsg.id ? { ...m, id: savedUserMsg.id } : m
+        )
+      );
+    }
 
     const tempAiMsgId = `temp-ai-${Date.now()}`;
     const tempAiMsg: Message = {
@@ -353,9 +307,28 @@ export default function Chat() {
         }
       }
 
-      // Queue AI response for batch save
+      // Save AI response immediately to database for memory
       if (aiResponseContent) {
-        setUnsavedMessages((prev) => [...prev, { role: "assistant", content: aiResponseContent }]);
+        const { data: savedAiMsg } = await supabase
+          .from("messages")
+          .insert({
+            chat_id: chatId,
+            role: "assistant",
+            content: aiResponseContent,
+          })
+          .select()
+          .single();
+
+        if (savedAiMsg) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === tempAiMsgId ? { ...m, id: savedAiMsg.id } : m
+            )
+          );
+        }
+
+        // Update chat timestamp
+        await supabase.from("chats").update({ updated_at: new Date().toISOString() }).eq("id", chatId);
       }
     } catch (error) {
       console.error("Chat error:", error);
@@ -365,8 +338,10 @@ export default function Chat() {
         description: error instanceof Error ? error.message : "Failed to get AI response",
       });
       setMessages((prev) => prev.filter((m) => m.id !== tempAiMsgId));
-      // Remove user message from unsaved queue on error
-      setUnsavedMessages((prev) => prev.slice(0, -1));
+      // Delete the user message from DB on error
+      if (savedUserMsg) {
+        await supabase.from("messages").delete().eq("id", savedUserMsg.id);
+      }
     }
 
     setLoading(false);
@@ -442,7 +417,7 @@ export default function Chat() {
               </SheetContent>
             </Sheet>
             
-            <Button variant="ghost" size="icon" onClick={() => handleNavigateAway("/dashboard")} className="hidden sm:flex">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} className="hidden sm:flex">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2 sm:gap-3">
@@ -555,25 +530,6 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* Save Chat Dialog */}
-      <AlertDialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Save your conversation?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved messages. Would you like to save this conversation before leaving?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={discardAndNavigate}>
-              Don't Save
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={saveAndNavigate}>
-              Save Chat
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
