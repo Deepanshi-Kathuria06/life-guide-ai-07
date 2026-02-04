@@ -14,6 +14,7 @@ import InsightsPanel from "@/components/InsightsPanel";
 import ProgressTracker from "@/components/ProgressTracker";
 import GoalsManager from "@/components/GoalsManager";
 import ChatHistory from "@/components/ChatHistory";
+import CoachTasksPanel from "@/components/CoachTasksPanel";
 
 type CoachType = "fitness" | "career" | "mindfulness" | "finance" | "relationship";
 
@@ -374,6 +375,7 @@ export default function Chat() {
   // Memoize sidebar content to prevent re-renders when typing
   const sidebarContent = useMemo(() => (
     <div className="p-4 space-y-4">
+      <CoachTasksPanel coachType={coachType || ''} chatId={chatId} />
       <GoalsManager coachType={coachType || ''} chatId={chatId} />
       <ProgressTracker chatId={chatId} coachType={coachType || ''} />
       <ChatHistory 
