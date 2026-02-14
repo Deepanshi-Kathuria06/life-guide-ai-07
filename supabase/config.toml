@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.extract-tasks]
 verify_jwt = false
+
+[functions.autopilot-agent]
+verify_jwt = false

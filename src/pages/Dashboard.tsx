@@ -43,10 +43,10 @@ export default function Dashboard() {
             </h1>
             <nav className="hidden md:flex gap-6">
               <button
-                onClick={() => navigate("/features")}
+                onClick={() => navigate("/autopilot")}
                 className="text-sm hover:text-primary transition-colors"
               >
-                Advanced Features
+                Life Autopilot
               </button>
             </nav>
           </div>

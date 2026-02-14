@@ -15,6 +15,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Features from "./pages/Features";
+import AutopilotOnboarding from "./pages/AutopilotOnboarding";
+import AutopilotDashboard from "./pages/AutopilotDashboard";
+import AutopilotReports from "./pages/AutopilotReports";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +38,9 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat/:coachType" element={<Chat />} />
           <Route path="/features" element={<Features />} />
+          <Route path="/autopilot/setup" element={<AutopilotOnboarding />} />
+          <Route path="/autopilot" element={<AutopilotDashboard />} />
+          <Route path="/autopilot/reports" element={<AutopilotReports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

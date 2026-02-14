@@ -14,6 +14,248 @@ export type Database = {
   }
   public: {
     Tables: {
+      autopilot_activity_logs: {
+        Row: {
+          completion_rate: number
+          created_at: string
+          goal_id: string
+          id: string
+          log_date: string
+          tasks_completed: number
+          tasks_total: number
+          user_id: string
+        }
+        Insert: {
+          completion_rate?: number
+          created_at?: string
+          goal_id: string
+          id?: string
+          log_date?: string
+          tasks_completed?: number
+          tasks_total?: number
+          user_id: string
+        }
+        Update: {
+          completion_rate?: number
+          created_at?: string
+          goal_id?: string
+          id?: string
+          log_date?: string
+          tasks_completed?: number
+          tasks_total?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "autopilot_activity_logs_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "autopilot_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      autopilot_goals: {
+        Row: {
+          ai_plan: Json | null
+          autopilot_enabled: boolean
+          challenges: string | null
+          created_at: string
+          daily_time_minutes: number
+          deadline: string | null
+          difficulty: string
+          goal_description: string
+          id: string
+          last_active_at: string | null
+          milestones: Json | null
+          motivation_type: string | null
+          progress_percent: number
+          status: string
+          streak_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_plan?: Json | null
+          autopilot_enabled?: boolean
+          challenges?: string | null
+          created_at?: string
+          daily_time_minutes?: number
+          deadline?: string | null
+          difficulty?: string
+          goal_description: string
+          id?: string
+          last_active_at?: string | null
+          milestones?: Json | null
+          motivation_type?: string | null
+          progress_percent?: number
+          status?: string
+          streak_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_plan?: Json | null
+          autopilot_enabled?: boolean
+          challenges?: string | null
+          created_at?: string
+          daily_time_minutes?: number
+          deadline?: string | null
+          difficulty?: string
+          goal_description?: string
+          id?: string
+          last_active_at?: string | null
+          milestones?: Json | null
+          motivation_type?: string | null
+          progress_percent?: number
+          status?: string
+          streak_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      autopilot_notifications: {
+        Row: {
+          created_at: string
+          goal_id: string | null
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "autopilot_notifications_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "autopilot_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      autopilot_reports: {
+        Row: {
+          ai_feedback: string | null
+          completion_rate: number
+          created_at: string
+          goal_id: string
+          id: string
+          next_week_strategy: string | null
+          performance_score: number
+          productivity_insights: Json | null
+          summary: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          ai_feedback?: string | null
+          completion_rate?: number
+          created_at?: string
+          goal_id: string
+          id?: string
+          next_week_strategy?: string | null
+          performance_score?: number
+          productivity_insights?: Json | null
+          summary: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          ai_feedback?: string | null
+          completion_rate?: number
+          created_at?: string
+          goal_id?: string
+          id?: string
+          next_week_strategy?: string | null
+          performance_score?: number
+          productivity_insights?: Json | null
+          summary?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "autopilot_reports_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "autopilot_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      autopilot_tasks: {
+        Row: {
+          adjustment_flag: boolean
+          adjustment_reason: string | null
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          due_date: string
+          goal_id: string
+          id: string
+          priority: string
+          task_text: string
+          user_id: string
+        }
+        Insert: {
+          adjustment_flag?: boolean
+          adjustment_reason?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string
+          goal_id: string
+          id?: string
+          priority?: string
+          task_text: string
+          user_id: string
+        }
+        Update: {
+          adjustment_flag?: boolean
+          adjustment_reason?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string
+          goal_id?: string
+          id?: string
+          priority?: string
+          task_text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "autopilot_tasks_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "autopilot_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chats: {
         Row: {
           coach_type: string
