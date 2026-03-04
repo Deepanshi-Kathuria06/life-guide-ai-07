@@ -14,6 +14,304 @@ export type Database = {
   }
   public: {
     Tables: {
+      aria_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_documents: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          summary: string | null
+          tags: string[] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_goals: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          milestones: Json | null
+          notes: string | null
+          progress_percent: number | null
+          target_date: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          notes?: string | null
+          progress_percent?: number | null
+          target_date?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          milestones?: Json | null
+          notes?: string | null
+          progress_percent?: number | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aria_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "aria_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aria_notes: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          is_pinned: boolean | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_profiles: {
+        Row: {
+          aria_context_summary: string | null
+          challenges: string | null
+          communication_style: string | null
+          created_at: string | null
+          goals_summary: string | null
+          id: string
+          name: string | null
+          updated_at: string | null
+          user_id: string
+          work_situation: string | null
+        }
+        Insert: {
+          aria_context_summary?: string | null
+          challenges?: string | null
+          communication_style?: string | null
+          created_at?: string | null
+          goals_summary?: string | null
+          id?: string
+          name?: string | null
+          updated_at?: string | null
+          user_id: string
+          work_situation?: string | null
+        }
+        Update: {
+          aria_context_summary?: string | null
+          challenges?: string | null
+          communication_style?: string | null
+          created_at?: string | null
+          goals_summary?: string | null
+          id?: string
+          name?: string | null
+          updated_at?: string | null
+          user_id?: string
+          work_situation?: string | null
+        }
+        Relationships: []
+      }
+      aria_reminders: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_sent: boolean | null
+          remind_at: string
+          task_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_sent?: boolean | null
+          remind_at: string
+          task_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_sent?: boolean | null
+          remind_at?: string
+          task_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aria_reminders_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "aria_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aria_tasks: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          due_at: string | null
+          id: string
+          is_recurring: boolean | null
+          priority: string | null
+          recurrence_pattern: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          priority?: string | null
+          recurrence_pattern?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          priority?: string | null
+          recurrence_pattern?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       autopilot_activity_logs: {
         Row: {
           completion_rate: number
