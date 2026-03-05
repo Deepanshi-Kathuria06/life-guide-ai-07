@@ -26,7 +26,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: "You are ARIA, a helpful document analyst. Be concise and structured." },
           { role: "user", content: prompt },
