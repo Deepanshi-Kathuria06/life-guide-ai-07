@@ -4,9 +4,9 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
-  Dumbbell, Briefcase, Brain, DollarSign, Heart, Sparkles, 
-  Check, Star, TrendingUp, Users, Clock, Shield,
-  ChevronDown, Menu
+  Sparkles, Check, Star, TrendingUp, Clock, Shield,
+  Menu, MessageSquare, CheckSquare, FileText, Target,
+  StickyNote, Calendar, Brain, Heart
 } from "lucide-react";
 import {
   Accordion,
@@ -15,41 +15,42 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const coaches = [
+const features = [
   {
-    name: "Fitness Coach",
-    description: "Personalized workout plans, form tips, and motivational support",
-    icon: Dumbbell,
-    color: "coach-fitness",
-    emoji: "💪",
+    title: "AI Chat Assistant",
+    description: "Have natural conversations with ARIA — get life advice, task planning, and emotional support",
+    icon: MessageSquare,
+    emoji: "💬",
   },
   {
-    name: "Career Coach",
-    description: "Resume reviews, interview prep, and career advancement strategies",
-    icon: Briefcase,
-    color: "coach-career",
-    emoji: "💼",
+    title: "Smart Task Manager",
+    description: "Kanban & list views, auto-created tasks from chat, priority filters, and due dates",
+    icon: CheckSquare,
+    emoji: "✅",
   },
   {
-    name: "Mindfulness Coach",
-    description: "Meditation techniques, stress management, and peaceful living",
-    icon: Brain,
-    color: "coach-mindfulness",
-    emoji: "🧠",
+    title: "Document Vault",
+    description: "Upload and organize documents. ARIA summarizes them and answers questions about them",
+    icon: FileText,
+    emoji: "📄",
   },
   {
-    name: "Finance Coach",
-    description: "Budgeting, saving strategies, and investment guidance",
-    icon: DollarSign,
-    color: "coach-finance",
-    emoji: "💰",
+    title: "Goal Tracker",
+    description: "Set life goals with milestones, track progress, and get AI-powered accountability",
+    icon: Target,
+    emoji: "🎯",
   },
   {
-    name: "Relationship Coach",
-    description: "Communication skills and relationship dynamics guidance",
-    icon: Heart,
-    color: "coach-relationship",
-    emoji: "❤️",
+    title: "Quick Notes",
+    description: "Capture ideas fast. Pin important notes and let ARIA expand or structure them",
+    icon: StickyNote,
+    emoji: "📝",
+  },
+  {
+    title: "Life Calendar",
+    description: "See tasks, reminders, and goal milestones in a unified calendar view",
+    icon: Calendar,
+    emoji: "📅",
   },
 ];
 
@@ -57,50 +58,50 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "Marketing Manager",
-    content: "The Career Coach helped me land my dream job! The interview prep was invaluable.",
+    content: "ARIA helped me organize my entire life — tasks, goals, documents, everything in one place.",
     rating: 5,
   },
   {
     name: "Michael Chen",
     role: "Entrepreneur",
-    content: "Finance Coach transformed how I manage my business finances. Highly recommend!",
+    content: "Having an AI that knows my goals and holds me accountable has been a game-changer.",
     rating: 5,
   },
   {
     name: "Emma Davis",
-    role: "Yoga Instructor",
-    content: "The Mindfulness Coach has been a game-changer for my mental well-being.",
+    role: "Freelance Designer",
+    content: "I replaced 5 different apps with ARIA. It's like having a personal chief of staff.",
     rating: 5,
   },
 ];
 
 const stats = [
   { value: "50K+", label: "Active Users" },
-  { value: "1M+", label: "Conversations" },
+  { value: "1M+", label: "Tasks Completed" },
   { value: "4.9/5", label: "User Rating" },
-  { value: "24/7", label: "Availability" },
+  { value: "24/7", label: "AI Available" },
 ];
 
 const faqs = [
   {
+    question: "What is ARIA?",
+    answer: "ARIA is your AI-powered personal life operating system. It combines a life coach, personal assistant, task manager, document organizer, and accountability partner into one unified platform.",
+  },
+  {
     question: "How does the free trial work?",
-    answer: "Start with 10 free messages to try any of our AI coaches. No credit card required. Experience the full power of personalized AI coaching risk-free.",
+    answer: "Sign up for free and get full access for 7 days. No credit card required. Experience all of ARIA's features risk-free.",
   },
   {
-    question: "Can I switch between different coaches?",
-    answer: "Absolutely! You have unlimited access to all 5 specialized coaches. Switch between them anytime to get the right guidance for different areas of your life.",
-  },
-  {
-    question: "How personalized are the coaching sessions?",
-    answer: "Each coach uses advanced AI to understand your unique situation, goals, and preferences. The more you interact, the more personalized your experience becomes.",
+    question: "How personalized is ARIA?",
+    answer: "ARIA learns about your goals, work situation, challenges, and preferred communication style during onboarding. It references your context in every conversation and adapts its approach to you.",
   },
   {
     question: "Is my data secure?",
-    answer: "Yes! We use enterprise-grade encryption and security measures. Your conversations are private and securely stored. We never share your personal data with third parties.",
+    answer: "Yes! We use enterprise-grade encryption and row-level security. Your data is private and only accessible to you. We never share your information with third parties.",
   },
   {
-    question: "Can I cancel my subscription anytime?",
-    answer: "Yes, you can cancel your subscription at any time. No questions asked, no hidden fees. Your access will continue until the end of your billing period.",
+    question: "Can ARIA create tasks from conversations?",
+    answer: "Absolutely! When you mention wanting to do something by a specific time, ARIA detects it and automatically creates a task for you. It's like having a secretary who never misses anything.",
   },
 ];
 
@@ -121,8 +122,11 @@ export default function Landing() {
       <header className="sticky top-0 border-b border-border/50 bg-background/80 backdrop-blur-md z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary-foreground" />
+            </div>
             <h1 className="text-xl md:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              AICOACHLY
+              ARIA
             </h1>
           </div>
           
@@ -141,10 +145,10 @@ export default function Landing() {
           
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex gap-3">
-            <Button variant="ghost" onClick={() => navigate("/auth")}>
+            <Button variant="ghost" onClick={() => navigate("/login")}>
               Log In
             </Button>
-            <Button variant="gradient" onClick={() => navigate("/auth")}>
+            <Button variant="gradient" onClick={() => navigate("/signup")}>
               Get Started
             </Button>
           </div>
@@ -160,7 +164,7 @@ export default function Landing() {
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-border">
                   <h2 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                    AICOACHLY
+                    ARIA
                   </h2>
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
@@ -175,10 +179,10 @@ export default function Landing() {
                   ))}
                 </nav>
                 <div className="p-4 border-t border-border space-y-3">
-                  <Button variant="outline" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
+                  <Button variant="outline" className="w-full" onClick={() => { navigate("/login"); setMobileMenuOpen(false); }}>
                     Log In
                   </Button>
-                  <Button variant="gradient" className="w-full" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }}>
+                  <Button variant="gradient" className="w-full" onClick={() => { navigate("/signup"); setMobileMenuOpen(false); }}>
                     Get Started
                   </Button>
                 </div>
@@ -196,72 +200,70 @@ export default function Landing() {
         
         <div className="max-w-4xl mx-auto text-center space-y-6 relative">
           <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-            <span className="text-sm font-medium text-primary">🚀 Powered by Advanced AI</span>
+            <span className="text-sm font-medium text-primary">✨ Your Personal AI Life Operating System</span>
           </div>
           
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI-Powered</span> Life Coach
+            Meet <span className="bg-gradient-primary bg-clip-text text-transparent">ARIA</span> — Your AI Chief of Staff
           </h2>
           
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get personalized guidance from 5 specialized AI coaches. Available 24/7 to help you achieve your goals in fitness, career, mindfulness, finance, and relationships.
+            One intelligent assistant that acts as your life coach, personal assistant, task manager, document organizer, and accountability partner — all in one app.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" variant="gradient" onClick={() => navigate("/auth")} className="px-8">
+            <Button size="lg" variant="gradient" onClick={() => navigate("/signup")} className="px-8">
               <Sparkles className="h-5 w-5 mr-2" />
-              Start Free Trial
+              Start Free — 7 Day Trial
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/pricing")} className="px-8">
-              View Pricing
+            <Button size="lg" variant="outline" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="px-8">
+              See Features
             </Button>
           </div>
           
-          <div className="flex items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 text-primary" />
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 text-primary" />
-              <span>10 free messages</span>
+              <span>All features included</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-primary" />
+              <span>Cancel anytime</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Coaches Section */}
+      {/* Features Section */}
       <section id="features" className="container mx-auto px-4 py-16 sm:py-20">
         <div className="text-center mb-12 md:mb-16">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-            Meet Your <span className="bg-gradient-primary bg-clip-text text-transparent">AI Coaches</span>
+            Everything You Need, <span className="bg-gradient-primary bg-clip-text text-transparent">One Place</span>
           </h3>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Five specialized coaches ready to help you excel in every aspect of life
+            ARIA replaces your separate coaching apps, task managers, and note tools with one unified system
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
-          {coaches.map((coach) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+          {features.map((feature) => (
             <Card
-              key={coach.name}
-              className="relative p-6 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 group overflow-hidden hover:scale-105 cursor-pointer"
-              style={{
-                borderColor: `hsl(var(--${coach.color}) / 0.3)`,
-              }}
-              onClick={() => navigate("/auth")}
+              key={feature.title}
+              className="relative p-6 bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300 border-2 border-border hover:border-primary/30 group overflow-hidden hover:scale-[1.02] cursor-pointer"
+              onClick={() => navigate("/signup")}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
-                <div className="text-4xl mb-4 animate-float">
-                  {coach.emoji}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">{feature.emoji}</div>
+                  <feature.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h4 className="text-lg font-semibold mb-2" style={{ color: `hsl(var(--${coach.color}))` }}>
-                  {coach.name}
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  {coach.description}
-                </p>
+                <h4 className="text-lg font-semibold mb-2 text-foreground">{feature.title}</h4>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
               </div>
             </Card>
           ))}
@@ -274,48 +276,29 @@ export default function Landing() {
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
             How It <span className="bg-gradient-primary bg-clip-text text-transparent">Works</span>
           </h3>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get started in minutes and transform your life with AI-powered coaching
-          </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <Card className="p-8 text-center bg-card/50 backdrop-blur-sm border-2 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">1</span>
+          {[
+            { num: "1", title: "Tell ARIA About You", desc: "Complete a quick onboarding — your goals, work, challenges, and preferred style" },
+            { num: "2", title: "Start Chatting", desc: "Ask ARIA anything. It creates tasks, gives advice, and manages your life proactively" },
+            { num: "3", title: "Stay Organized", desc: "Tasks, goals, documents, and notes — all managed by ARIA and accessible anywhere" },
+          ].map((step) => (
+            <Card key={step.num} className="p-8 text-center bg-card/50 backdrop-blur-sm border-2 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-primary">{step.num}</span>
+                </div>
+                <h4 className="text-xl font-semibold mb-3">{step.title}</h4>
+                <p className="text-muted-foreground">{step.desc}</p>
               </div>
-              <h4 className="text-xl font-semibold mb-3">Choose Your Coach</h4>
-              <p className="text-muted-foreground">Select from 5 specialized AI coaches based on your goals</p>
-            </div>
-          </Card>
-          
-          <Card className="p-8 text-center bg-card/50 backdrop-blur-sm border-2 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">2</span>
-              </div>
-              <h4 className="text-xl font-semibold mb-3">Start Chatting</h4>
-              <p className="text-muted-foreground">Have natural conversations and get personalized advice instantly</p>
-            </div>
-          </Card>
-          
-          <Card className="p-8 text-center bg-card/50 backdrop-blur-sm border-2 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h4 className="text-xl font-semibold mb-3">Achieve Your Goals</h4>
-              <p className="text-muted-foreground">Follow personalized action plans and track your progress</p>
-            </div>
-          </Card>
+            </Card>
+          ))}
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats */}
       <section className="container mx-auto px-4 py-16 sm:py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
           {stats.map((stat, index) => (
@@ -329,61 +312,30 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Benefits Section */}
+      {/* Benefits */}
       <section className="container mx-auto px-4 py-16 sm:py-20">
         <div className="text-center mb-12 md:mb-16">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-            Why Choose <span className="bg-gradient-primary bg-clip-text text-transparent">AICOACHLY</span>
+            Why Choose <span className="bg-gradient-primary bg-clip-text text-transparent">ARIA</span>
           </h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Clock className="h-8 w-8 text-primary" />
+          {[
+            { icon: Clock, title: "24/7 Availability", desc: "ARIA is always ready — morning check-ins, late-night brainstorms, anytime." },
+            { icon: Brain, title: "Context-Aware", desc: "ARIA remembers your goals, challenges, and preferences across every conversation." },
+            { icon: Heart, title: "Empathetic & Direct", desc: "Warm when you need support, direct when you need action steps." },
+            { icon: Shield, title: "Private & Secure", desc: "Enterprise-grade encryption. Your data stays yours, always." },
+            { icon: TrendingUp, title: "Proactive Guidance", desc: "ARIA anticipates needs and suggests actions before you ask." },
+            { icon: Target, title: "Results-Driven", desc: "Concrete steps, accountability tracking, and measurable progress." },
+          ].map((b, i) => (
+            <div key={i} className="text-center p-6">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <b.icon className="h-8 w-8 text-primary" />
+              </div>
+              <h4 className="text-xl font-semibold mb-2">{b.title}</h4>
+              <p className="text-muted-foreground">{b.desc}</p>
             </div>
-            <h4 className="text-xl font-semibold mb-2">24/7 Availability</h4>
-            <p className="text-muted-foreground">Get expert advice instantly, anytime you need it.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Brain className="h-8 w-8 text-primary" />
-            </div>
-            <h4 className="text-xl font-semibold mb-2">Specialized Expertise</h4>
-            <p className="text-muted-foreground">Each AI coach is trained specifically in their domain.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Heart className="h-8 w-8 text-primary" />
-            </div>
-            <h4 className="text-xl font-semibold mb-2">Personalized</h4>
-            <p className="text-muted-foreground">Tailored to your unique goals and challenges.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <h4 className="text-xl font-semibold mb-2">Private & Secure</h4>
-            <p className="text-muted-foreground">Your conversations are encrypted and private.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="h-8 w-8 text-primary" />
-            </div>
-            <h4 className="text-xl font-semibold mb-2">Proven Results</h4>
-            <p className="text-muted-foreground">Join thousands achieving their goals.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Users className="h-8 w-8 text-primary" />
-            </div>
-            <h4 className="text-xl font-semibold mb-2">Community</h4>
-            <p className="text-muted-foreground">Join a community of growth-minded individuals.</p>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -395,24 +347,24 @@ export default function Landing() {
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((t, index) => (
             <Card key={index} className="p-6 bg-card/50 backdrop-blur-sm border">
               <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
+                {[...Array(t.rating)].map((_, i) => (
                   <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                 ))}
               </div>
-              <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+              <p className="text-muted-foreground mb-4">"{t.content}"</p>
               <div>
-                <p className="font-semibold">{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                <p className="font-semibold">{t.name}</p>
+                <p className="text-sm text-muted-foreground">{t.role}</p>
               </div>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section className="container mx-auto px-4 py-16 sm:py-20">
         <div className="text-center mb-12 md:mb-16">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
@@ -423,28 +375,24 @@ export default function Landing() {
           <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {faq.answer}
-                </AccordionContent>
+                <AccordionTrigger className="text-left hover:no-underline">{faq.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA */}
       <section className="container mx-auto px-4 py-16 sm:py-20">
         <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-            Ready to Transform Your Life?
+            Ready to Let ARIA Run Your Life?
           </h3>
           <p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of users who have already started their journey with AICOACHLY
+            Join thousands of users who replaced 5+ apps with one intelligent assistant
           </p>
-          <Button size="lg" variant="gradient" onClick={() => navigate("/auth")} className="px-10">
+          <Button size="lg" variant="gradient" onClick={() => navigate("/signup")} className="px-10">
             <Sparkles className="h-5 w-5 mr-2" />
             Start Your Free Trial
           </Button>
@@ -456,11 +404,14 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h4 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-                AICOACHLY
-              </h4>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-6 h-6 rounded-md bg-gradient-primary flex items-center justify-center">
+                  <Sparkles className="w-3 h-3 text-primary-foreground" />
+                </div>
+                <h4 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">ARIA</h4>
+              </div>
               <p className="text-sm text-muted-foreground">
-                Your AI-powered life coach for personal and professional growth.
+                Your AI-powered personal life operating system.
               </p>
             </div>
             <div>
@@ -486,7 +437,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="border-t border-border/50 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} AICOACHLY. All rights reserved.
+            © {new Date().getFullYear()} ARIA LifeOS. All rights reserved.
           </div>
         </div>
       </footer>

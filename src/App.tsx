@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -25,6 +27,17 @@ import AriaOnboarding from "./pages/aria/AriaOnboarding";
 
 const queryClient = new QueryClient();
 
+// Handle OAuth callback redirect
+function OAuthRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      navigate(session ? "/app" : "/login", { replace: true });
+    });
+  }, [navigate]);
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -39,6 +52,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/features" element={<Features />} />
+          <Route path="/~oauth" element={<OAuthRedirect />} />
 
           {/* ARIA App Routes */}
           <Route path="/app" element={<AriaDashboard />} />
@@ -54,6 +68,7 @@ const App = () => (
           {/* Legacy redirects */}
           <Route path="/dashboard" element={<Navigate to="/app" replace />} />
           <Route path="/chat/*" element={<Navigate to="/app/chat" replace />} />
+          <Route path="/auth" element={<Navigate to="/login" replace />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
