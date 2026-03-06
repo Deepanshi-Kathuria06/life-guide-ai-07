@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      aria_bookmarks: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_favorite: boolean | null
+          tags: string[] | null
+          title: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          tags?: string[] | null
+          title?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          tags?: string[] | null
+          title?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_budgets: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          monthly_limit: number
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          monthly_limit: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          monthly_limit?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       aria_conversations: {
         Row: {
           created_at: string | null
@@ -80,6 +140,86 @@ export type Database = {
         }
         Relationships: []
       }
+      aria_expenses: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string | null
+          date: string | null
+          description: string | null
+          id: string
+          is_recurring: boolean | null
+          recurrence_pattern: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          type?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aria_focus_sessions: {
+        Row: {
+          completed: boolean | null
+          duration_minutes: number
+          ended_at: string | null
+          id: string
+          notes: string | null
+          started_at: string | null
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          duration_minutes: number
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          duration_minutes?: number
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          task_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aria_focus_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "aria_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aria_goals: {
         Row: {
           category: string | null
@@ -122,6 +262,92 @@ export type Database = {
         }
         Relationships: []
       }
+      aria_habit_logs: {
+        Row: {
+          completed_at: string | null
+          habit_id: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          habit_id: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          habit_id?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aria_habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "aria_habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aria_habits: {
+        Row: {
+          best_streak: number | null
+          category: string | null
+          created_at: string | null
+          current_streak: number | null
+          description: string | null
+          frequency: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          last_completed_at: string | null
+          target_count: number | null
+          title: string
+          total_completions: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          category?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          description?: string | null
+          frequency?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_completed_at?: string | null
+          target_count?: number | null
+          title: string
+          total_completions?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          category?: string | null
+          created_at?: string | null
+          current_streak?: number | null
+          description?: string | null
+          frequency?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_completed_at?: string | null
+          target_count?: number | null
+          title?: string
+          total_completions?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       aria_messages: {
         Row: {
           content: string
@@ -156,6 +382,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      aria_mood_entries: {
+        Row: {
+          ai_insight: string | null
+          created_at: string | null
+          energy_level: number | null
+          id: string
+          journal_entry: string | null
+          mood_label: string
+          mood_score: number
+          tags: string[] | null
+          user_id: string
+        }
+        Insert: {
+          ai_insight?: string | null
+          created_at?: string | null
+          energy_level?: number | null
+          id?: string
+          journal_entry?: string | null
+          mood_label: string
+          mood_score: number
+          tags?: string[] | null
+          user_id: string
+        }
+        Update: {
+          ai_insight?: string | null
+          created_at?: string | null
+          energy_level?: number | null
+          id?: string
+          journal_entry?: string | null
+          mood_label?: string
+          mood_score?: number
+          tags?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
       }
       aria_notes: {
         Row: {
@@ -193,36 +455,51 @@ export type Database = {
       aria_profiles: {
         Row: {
           aria_context_summary: string | null
+          avatar_url: string | null
+          badges: Json | null
           challenges: string | null
           communication_style: string | null
           created_at: string | null
           goals_summary: string | null
           id: string
+          level: number | null
           name: string | null
+          notification_preferences: Json | null
+          total_xp: number | null
           updated_at: string | null
           user_id: string
           work_situation: string | null
         }
         Insert: {
           aria_context_summary?: string | null
+          avatar_url?: string | null
+          badges?: Json | null
           challenges?: string | null
           communication_style?: string | null
           created_at?: string | null
           goals_summary?: string | null
           id?: string
+          level?: number | null
           name?: string | null
+          notification_preferences?: Json | null
+          total_xp?: number | null
           updated_at?: string | null
           user_id: string
           work_situation?: string | null
         }
         Update: {
           aria_context_summary?: string | null
+          avatar_url?: string | null
+          badges?: Json | null
           challenges?: string | null
           communication_style?: string | null
           created_at?: string | null
           goals_summary?: string | null
           id?: string
+          level?: number | null
           name?: string | null
+          notification_preferences?: Json | null
+          total_xp?: number | null
           updated_at?: string | null
           user_id?: string
           work_situation?: string | null
@@ -309,6 +586,84 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      aria_weekly_reviews: {
+        Row: {
+          ai_recommendations: string | null
+          ai_summary: string | null
+          challenges: string | null
+          created_at: string | null
+          goals_progress: Json | null
+          highlights: string | null
+          id: string
+          mood_average: number | null
+          tasks_completed: number | null
+          tasks_total: number | null
+          user_id: string
+          week_start: string
+          xp_earned: number | null
+        }
+        Insert: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          challenges?: string | null
+          created_at?: string | null
+          goals_progress?: Json | null
+          highlights?: string | null
+          id?: string
+          mood_average?: number | null
+          tasks_completed?: number | null
+          tasks_total?: number | null
+          user_id: string
+          week_start: string
+          xp_earned?: number | null
+        }
+        Update: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          challenges?: string | null
+          created_at?: string | null
+          goals_progress?: Json | null
+          highlights?: string | null
+          id?: string
+          mood_average?: number | null
+          tasks_completed?: number | null
+          tasks_total?: number | null
+          user_id?: string
+          week_start?: string
+          xp_earned?: number | null
+        }
+        Relationships: []
+      }
+      aria_xp_logs: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          source: string
+          source_id: string | null
+          user_id: string
+          xp_amount: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          source: string
+          source_id?: string | null
+          user_id: string
+          xp_amount: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          source?: string
+          source_id?: string | null
+          user_id?: string
+          xp_amount?: number
         }
         Relationships: []
       }
