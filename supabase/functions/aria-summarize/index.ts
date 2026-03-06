@@ -9,15 +9,32 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { text, type } = await req.json();
+    const { text, type, content } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("AI service not configured");
 
-    const prompt = type === "document"
-      ? `Summarize this document concisely. Highlight key points, important dates, obligations, and action items:\n\n${text}`
-      : type === "expand"
-      ? `Expand and structure this note into a well-organized document with clear sections, details, and actionable points:\n\n${text}`
-      : `Provide a brief summary:\n\n${text}`;
+    const inputText = text || content || "";
+
+    let prompt: string;
+    switch (type) {
+      case "document":
+        prompt = `Summarize this document concisely. Highlight key points, important dates, obligations, and action items:\n\n${inputText}`;
+        break;
+      case "expand":
+        prompt = `Expand and structure this note into a well-organized document with clear sections, details, and actionable points:\n\n${inputText}`;
+        break;
+      case "mood_insight":
+        prompt = `Based on this mood check-in, provide a brief 1-2 sentence personalized insight or encouragement. Be warm and specific:\n\n${inputText}`;
+        break;
+      case "weekly_review":
+        prompt = `Generate a comprehensive weekly review summary based on this data. Include: highlights, areas of improvement, and 3 specific recommendations for next week. Use markdown formatting:\n\n${inputText}`;
+        break;
+      case "morning_briefing":
+        prompt = `Generate a warm, motivating morning briefing based on this data. Include: today's priorities, reminders, and one motivational thought. Keep it concise and actionable:\n\n${inputText}`;
+        break;
+      default:
+        prompt = `Provide a brief summary:\n\n${inputText}`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

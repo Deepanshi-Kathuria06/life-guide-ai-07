@@ -24,6 +24,12 @@ import AriaNotes from "./pages/aria/AriaNotes";
 import AriaCalendar from "./pages/aria/AriaCalendar";
 import AriaSettings from "./pages/aria/AriaSettings";
 import AriaOnboarding from "./pages/aria/AriaOnboarding";
+import AriaHabits from "./pages/aria/AriaHabits";
+import AriaMood from "./pages/aria/AriaMood";
+import AriaFinance from "./pages/aria/AriaFinance";
+import AriaFocus from "./pages/aria/AriaFocus";
+import AriaBookmarks from "./pages/aria/AriaBookmarks";
+import AriaWeeklyReview from "./pages/aria/AriaWeeklyReview";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +68,12 @@ const App = () => (
           <Route path="/app/goals" element={<AriaGoals />} />
           <Route path="/app/notes" element={<AriaNotes />} />
           <Route path="/app/calendar" element={<AriaCalendar />} />
+          <Route path="/app/habits" element={<AriaHabits />} />
+          <Route path="/app/mood" element={<AriaMood />} />
+          <Route path="/app/finance" element={<AriaFinance />} />
+          <Route path="/app/focus" element={<AriaFocus />} />
+          <Route path="/app/bookmarks" element={<AriaBookmarks />} />
+          <Route path="/app/review" element={<AriaWeeklyReview />} />
           <Route path="/app/settings" element={<AriaSettings />} />
           <Route path="/app/onboarding" element={<AriaOnboarding />} />
 
