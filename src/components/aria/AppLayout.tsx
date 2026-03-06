@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, MessageSquare, CheckSquare, FileText,
   Target, StickyNote, Calendar, Settings, LogOut, Menu, X, Sparkles,
+  Flame, SmilePlus, Wallet, Timer, Bookmark, BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,10 +13,16 @@ const navItems = [
   { title: "Dashboard", path: "/app", icon: LayoutDashboard },
   { title: "Chat with ARIA", path: "/app/chat", icon: MessageSquare },
   { title: "Tasks", path: "/app/tasks", icon: CheckSquare },
-  { title: "Documents", path: "/app/documents", icon: FileText },
+  { title: "Habits", path: "/app/habits", icon: Flame },
+  { title: "Mood", path: "/app/mood", icon: SmilePlus },
   { title: "Goals", path: "/app/goals", icon: Target },
+  { title: "Finance", path: "/app/finance", icon: Wallet },
+  { title: "Focus Timer", path: "/app/focus", icon: Timer },
+  { title: "Documents", path: "/app/documents", icon: FileText },
   { title: "Notes", path: "/app/notes", icon: StickyNote },
+  { title: "Bookmarks", path: "/app/bookmarks", icon: Bookmark },
   { title: "Calendar", path: "/app/calendar", icon: Calendar },
+  { title: "Weekly Review", path: "/app/review", icon: BarChart3 },
   { title: "Settings", path: "/app/settings", icon: Settings },
 ];
 
